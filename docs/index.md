@@ -1,5 +1,5 @@
 # Enigma
-## We are making a game set in space aboard a space station.
+### We are making a game set in space aboard a space station.
 
 Documentation:
 []()
