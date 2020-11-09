@@ -1,2 +1,0 @@
-dev/enigma/auber/MainGame.java
- dev.enigma.auber.MainGame
