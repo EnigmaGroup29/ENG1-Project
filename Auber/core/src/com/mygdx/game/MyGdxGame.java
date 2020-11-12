@@ -183,4 +183,72 @@ public class MyGdxGame extends ApplicationAdapter {
 			this.location = loc;
 		}
 	}
+
+	public class System extends Component{
+		boolean active;
+		
+		public System() {
+		}
+		
+		public System(int i,boolean activeBool) {
+			super(i);
+			this.active = activeBool;
+		}
+		
+		public boolean isActive() {
+			return this.active;
+		}
+		
+		public void setActive(boolean activeBool) {
+			this.active = activeBool;
+		}
+		
+		
+	}
+	
+	public class Player extends Character{
+		public Player() {
+			
+		}
+		
+		public Player(int i, TextureRegion spriteSet) {
+			super(i,spriteSet);
+		}
+		
+		public void RoomTeleporters() {
+			
+		}
+		
+		public void Arrest(Enemy enemy) {
+			
+		}
+	}
+	
+	public class Controller extends Component {
+		public Controller() {
+			
+		}
+		
+		public Controller(int i) {
+			super(i);
+		}
+	}
+	
+	public class AI extends Controller{
+		public AI() {
+			
+		}
+		
+		public void PathToObjective(Point p) {
+			
+		}
+		
+		public void DecideObjective() {
+			
+		}
+	}
+	
+	public class UserInput extends Controller{
+		
+	}
 }
