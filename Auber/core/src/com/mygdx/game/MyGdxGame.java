@@ -1,12 +1,12 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.Input;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -24,19 +24,36 @@ public class MyGdxGame extends ApplicationAdapter {
 	Animation<TextureRegion> infil2Run;
 	Animation<TextureRegion> infil3Run;
 	Animation<TextureRegion> infilBase1Run;
-	Animation<TextureRegion> infilBase2Run;
-	Animation<TextureRegion> infilBase3Run;
-	Animation<TextureRegion> infilBase4Run;
-	Animation<TextureRegion> infilBase5Run;
+//	Animation<TextureRegion> infilBase2Run;
+//	Animation<TextureRegion> infilBase3Run;
+//	Animation<TextureRegion> infilBase4Run;
+//	Animation<TextureRegion> infilBase5Run;
+
+	Entity InfiltratorBase1;
+	Entity InfiltratorBase2;
+	Entity InfiltratorBase3;
+	Entity InfiltratorBase4;
+	Entity InfiltratorBase5;
+	Entity Infiltrator1;
+	Entity Infiltrator2;
+	Entity Infiltrator3;
+
+	Entity Auber;
 
 	ArrayList<Integer> components = new ArrayList<Integer>();
+	
+	//UserInputs inputs;
 
 
-	@Override
+//	Input.Buttons
+
+
+	//@Override
 	public void create () {
 		batch = new SpriteBatch();
 		gameMap = new Texture("GameMap.jpg");
 		textureAtlas = new TextureAtlas("spriteSheet1.txt");
+	//	inputs = new UserInputs();
 
 		Gdx.graphics.setContinuousRendering(true);
 		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
@@ -54,23 +71,30 @@ public class MyGdxGame extends ApplicationAdapter {
 		infil3Run.setPlayMode(Animation.PlayMode.LOOP);
 		infilBase1Run = new Animation(0.3f, textureAtlas.findRegions("InfiltratorSprite"));
 		infilBase1Run.setPlayMode(Animation.PlayMode.LOOP);
-		infilBase2Run = new Animation(0.3f, textureAtlas.findRegions("InfiltratorSprite"));
-		infilBase2Run.setPlayMode(Animation.PlayMode.LOOP);
-		infilBase3Run = new Animation(0.3f, textureAtlas.findRegions("InfiltratorSprite"));
-		infilBase3Run.setPlayMode(Animation.PlayMode.LOOP);
-		infilBase4Run = new Animation(0.3f, textureAtlas.findRegions("InfiltratorSprite"));
-		infilBase4Run.setPlayMode(Animation.PlayMode.LOOP);
-		infilBase5Run = new Animation(0.3f, textureAtlas.findRegions("InfiltratorSprite"));
-		infilBase5Run.setPlayMode(Animation.PlayMode.LOOP);
+
 
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 641,700 );
+		camera.setToOrtho(false, 641, 700);
 
+        Component[] listA = new Component[]{new Enemy(101, auberRun, 101), new Location(201, new Point(20, 440))};
+        Auber = new Entity(listA, 101);
 
-		//	for i in textureAtlas.findRegions("InfiltratorSprite"){
-
-		//	}
-		//	Entity InfiltratorBase = new Entity([new Enemy(102, for i in textureAtlas.findRegions("InfiltratorSprite"), 102)] )
+		Component[] listB1 = new Component[]{new Enemy(102, infilBase1Run, 102), new Location(202, new Point(615, 140))};
+		InfiltratorBase1 = new Entity(listB1, 102);
+        Component[] listB2 = new Component[]{new Enemy(103, infilBase1Run, 103), new Location(203, new Point(615, 160))};
+        InfiltratorBase2 = new Entity(listB2, 103);
+        Component[] listB3 = new Component[]{new Enemy(104, infilBase1Run, 104), new Location(204, new Point(615, 180))};
+        InfiltratorBase3 = new Entity(listB3, 104);
+        Component[] listB4 = new Component[]{new Enemy(105, infilBase1Run, 105), new Location(205, new Point(615, 200))};
+        InfiltratorBase4 = new Entity(listB4, 105);
+        Component[] listB5 = new Component[]{new Enemy(106, infilBase1Run, 106), new Location(206, new Point(615, 220))};
+        InfiltratorBase5 = new Entity(listB5, 106);
+        Component[] listI1 = new Component[]{new Enemy(107, infil1Run, 107), new Location(207, new Point(600, 140))};
+        Infiltrator1 = new Entity(listI1, 107);
+        Component[] listI2 = new Component[]{new Enemy(108, infil2Run, 108), new Location(208, new Point(600, 180))};
+        Infiltrator2 = new Entity(listI2, 108);
+        Component[] listI3 = new Component[]{new Enemy(109, infil3Run, 109), new Location(209, new Point(600, 220))};
+        Infiltrator3 = new Entity(listI3, 109);
 	}
 
 	@Override
@@ -80,18 +104,31 @@ public class MyGdxGame extends ApplicationAdapter {
 		stateTime += Gdx.graphics.getDeltaTime();
 		TextureRegion currentFrame = auberRun.getKeyFrame(stateTime);
 
+		if(Gdx.input.isKeyPressed(Input.Keys.A)){
+			Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x) - 1, (Auber.getComponent(1).getLocation().y)));
+		}
+		if(Gdx.input.isKeyPressed(Input.Keys.D)){
+			Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x) + 1, (Auber.getComponent(1).getLocation().y)));
+		}
+		if(Gdx.input.isKeyPressed(Input.Keys.W)){
+			Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x), (Auber.getComponent(1).getLocation().y) + 1));
+		}
+		if(Gdx.input.isKeyPressed(Input.Keys.S)){
+			Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x), (Auber.getComponent(1).getLocation().y) - 1));
+		}
+
 		batch.begin();
 		batch.draw(gameMap, 0, 0, 641, 480);
 
-		batch.draw(auberRun.getKeyFrame(stateTime), 20, 440);
-		batch.draw(infil1Run.getKeyFrame(stateTime), 600, 140);
-		batch.draw(infil2Run.getKeyFrame(stateTime), 600, 180);
-		batch.draw(infil3Run.getKeyFrame(stateTime), 600, 220);
-		batch.draw(infilBase1Run.getKeyFrame(stateTime), 615, 140);
-		batch.draw(infilBase2Run.getKeyFrame(stateTime), 615, 160);
-		batch.draw(infilBase3Run.getKeyFrame(stateTime), 615, 180);
-		batch.draw(infilBase4Run.getKeyFrame(stateTime), 615, 200);
-		batch.draw(infilBase5Run.getKeyFrame(stateTime), 615, 220);
+        batch.draw(Auber.getComponent(0).getSprites().getKeyFrame(stateTime), Auber.getComponent(1).getLocation().x, Auber.getComponent(1).getLocation().y);
+		batch.draw(InfiltratorBase1.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase1.getComponent(1).getLocation().x, InfiltratorBase1.getComponent(1).getLocation().y);
+        batch.draw(InfiltratorBase2.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase2.getComponent(1).getLocation().x, InfiltratorBase2.getComponent(1).getLocation().y);
+        batch.draw(InfiltratorBase3.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase3.getComponent(1).getLocation().x, InfiltratorBase3.getComponent(1).getLocation().y);
+        batch.draw(InfiltratorBase4.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase4.getComponent(1).getLocation().x, InfiltratorBase4.getComponent(1).getLocation().y);
+        batch.draw(InfiltratorBase5.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase5.getComponent(1).getLocation().x, InfiltratorBase5.getComponent(1).getLocation().y);
+        batch.draw(Infiltrator1.getComponent(0).getSprites().getKeyFrame(stateTime), Infiltrator1.getComponent(1).getLocation().x, Infiltrator1.getComponent(1).getLocation().y);
+        batch.draw(Infiltrator2.getComponent(0).getSprites().getKeyFrame(stateTime), Infiltrator2.getComponent(1).getLocation().x, Infiltrator2.getComponent(1).getLocation().y);
+        batch.draw(Infiltrator3.getComponent(0).getSprites().getKeyFrame(stateTime), Infiltrator3.getComponent(1).getLocation().x, Infiltrator3.getComponent(1).getLocation().y);
 
 		batch.end();
 
@@ -99,10 +136,11 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	@Override
 	public void dispose () {
-		batch.dispose();
-		gameMap.dispose();
-		textureAtlas.dispose();
-	}
+        gameMap.dispose();
+        textureAtlas.dispose();
+        batch.dispose();
+    }
+
 
 
 	public class Entity{
@@ -111,8 +149,9 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		public Entity(){
 		}
-		public Entity(Component[] components1){
+		public Entity(Component[] components1, int id){
 			this.components = components1;
+			this.entityID = id;
 		}
 
 		public Component getComponent(int i){
@@ -127,7 +166,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 	}
 
-	public class Component{
+	public abstract class Component{
 		int componentId;
 
 
@@ -146,20 +185,28 @@ public class MyGdxGame extends ApplicationAdapter {
 			componentId = id;
 		}
 
+		public abstract Animation<TextureRegion> getSprites();
+		public abstract Point getLocation();
+		public abstract void setLocation(Point p);
+
 	}
 
-	public class Character extends Component{
-		TextureRegion sprites;
+	public class Character extends Component {
+		Animation<TextureRegion> sprites;
 
-		public Character(){
+		public Character() {
 		}
-		public Character(int i, TextureRegion spriteSet){
+
+		public Character(int i, Animation<TextureRegion> spriteSet) {
 			super(i);
 			this.sprites = spriteSet;
 		}
 
-		public TextureRegion getSprites(){return sprites;}
-		public void getSprites(TextureRegion newSprites){sprites = newSprites;}
+		public Animation<TextureRegion> getSprites() {
+			return sprites;
+		}
+		public Point getLocation(){return null;}
+		public void setLocation(Point p){}
 	}
 
 	public class Enemy extends Character{
@@ -167,11 +214,17 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		public Enemy(){
 		}
-		public Enemy(int i, TextureRegion spriteSet, int j){
+		public Enemy(int i, Animation<TextureRegion> spriteSet, int j){
 			super(i, spriteSet);
 			this.enemyId = j;
 		}
+
+		public Animation<TextureRegion> getSprites() {
+			return super.getSprites();
+		}
+		public Point getLocation(){return null;}
 	}
+
 
 	public class Location extends Component{
 		Point location;
@@ -182,73 +235,28 @@ public class MyGdxGame extends ApplicationAdapter {
 			super(i);
 			this.location = loc;
 		}
+
+		public Point getLocation(){
+			return this.location;
+		}
+		public void setLocation(Point locIn){
+			this.location = locIn;
+		}
+		public Animation<TextureRegion> getSprites(){return null;}
 	}
 
-	public class System extends Component{
-		boolean active;
-		
-		public System() {
-		}
-		
-		public System(int i,boolean activeBool) {
-			super(i);
-			this.active = activeBool;
-		}
-		
-		public boolean isActive() {
-			return this.active;
-		}
-		
-		public void setActive(boolean activeBool) {
-			this.active = activeBool;
-		}
-		
-		
+
+	public abstract class Controller extends Component{
+		public Controller(){}
+
 	}
-	
-	public class Player extends Character{
-		public Player() {
-			
-		}
-		
-		public Player(int i, TextureRegion spriteSet) {
-			super(i,spriteSet);
-		}
-		
-		public void RoomTeleporters() {
-			
-		}
-		
-		public void Arrest(Enemy enemy) {
-			
-		}
-	}
-	
-	public class Controller extends Component {
-		public Controller() {
-			
-		}
-		
-		public Controller(int i) {
-			super(i);
-		}
-	}
-	
-	public class AI extends Controller{
-		public AI() {
-			
-		}
-		
-		public void PathToObjective(Point p) {
-			
-		}
-		
-		public void DecideObjective() {
-			
-		}
-	}
-	
-	public class UserInput extends Controller{
-		
-	}
+
+//	public class UserInputs extends Controller implements InputProcessor{
+//		public UserInputs(){}
+//
+//		public boolean keyDown(int i){return Input.isKeyDown(i);}
+//
+//		public Animation<TextureRegion> getSprites() { return null; }
+//		public Point getLocation(){return null;}
+//	}
 }
