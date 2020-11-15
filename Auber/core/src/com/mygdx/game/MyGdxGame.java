@@ -24,10 +24,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	Animation<TextureRegion> infil2Run;
 	Animation<TextureRegion> infil3Run;
 	Animation<TextureRegion> infilBase1Run;
-//	Animation<TextureRegion> infilBase2Run;
-//	Animation<TextureRegion> infilBase3Run;
-//	Animation<TextureRegion> infilBase4Run;
-//	Animation<TextureRegion> infilBase5Run;
+	Animation<TextureRegion> infil1Arrest;
+	Animation<TextureRegion> infil2Arrest;
+	Animation<TextureRegion> infil3Arrest;
+	Animation<TextureRegion> infilBase1Arrest;
 
 	Entity InfiltratorBase1;
 	Entity InfiltratorBase2;
@@ -41,11 +41,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	Entity Auber;
 
 	ArrayList<Integer> components = new ArrayList<Integer>();
-	
-	//UserInputs inputs;
-
-
-//	Input.Buttons
+	ArrayList<Entity> enemies = new ArrayList<Entity>();
+	ArrayList<Animation> anims  = new ArrayList<Animation>();
 
 
 	//@Override
@@ -53,7 +50,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		gameMap = new Texture("GameMap.jpg");
 		textureAtlas = new TextureAtlas("spriteSheet1.txt");
-	//	inputs = new UserInputs();
 
 		Gdx.graphics.setContinuousRendering(true);
 		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
@@ -65,12 +61,24 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		infil1Run = new Animation(0.3f, textureAtlas.findRegions("Infiltrator1Sprite"));
 		infil1Run.setPlayMode(Animation.PlayMode.LOOP);
+		infil1Arrest = new Animation(1, textureAtlas.findRegion("Infiltrator1SpriteArrest"));
+		anims.add(infil1Run);
+		anims.add(infil1Arrest);
 		infil2Run = new Animation(0.3f, textureAtlas.findRegions("Infiltrator2Sprite"));
 		infil2Run.setPlayMode(Animation.PlayMode.LOOP);
+		infil2Arrest = new Animation(1, textureAtlas.findRegion("Infiltrator2SpriteArrest"));
+		anims.add(infil2Run);
+		anims.add(infil2Arrest);
 		infil3Run = new Animation(0.3f, textureAtlas.findRegions("Infiltrator3Sprite"));
 		infil3Run.setPlayMode(Animation.PlayMode.LOOP);
+		infil3Arrest = new Animation(1, textureAtlas.findRegion("Infiltrator3SpriteArrest"));
+		anims.add(infil3Run);
+		anims.add(infil3Arrest);
 		infilBase1Run = new Animation(0.3f, textureAtlas.findRegions("InfiltratorSprite"));
 		infilBase1Run.setPlayMode(Animation.PlayMode.LOOP);
+		infilBase1Arrest = new Animation(1, textureAtlas.findRegion("InfiltratorSpriteArrest"));
+		anims.add(infilBase1Run);
+		anims.add(infilBase1Arrest);
 
 
 		camera = new OrthographicCamera();
@@ -81,20 +89,28 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		Component[] listB1 = new Component[]{new Enemy(102, infilBase1Run, 102), new Location(202, new Point(615, 140))};
 		InfiltratorBase1 = new Entity(listB1, 102);
+		enemies.add(InfiltratorBase1);
         Component[] listB2 = new Component[]{new Enemy(103, infilBase1Run, 103), new Location(203, new Point(615, 160))};
         InfiltratorBase2 = new Entity(listB2, 103);
+		enemies.add(InfiltratorBase2);
         Component[] listB3 = new Component[]{new Enemy(104, infilBase1Run, 104), new Location(204, new Point(615, 180))};
         InfiltratorBase3 = new Entity(listB3, 104);
+		enemies.add(InfiltratorBase3);
         Component[] listB4 = new Component[]{new Enemy(105, infilBase1Run, 105), new Location(205, new Point(615, 200))};
         InfiltratorBase4 = new Entity(listB4, 105);
+		enemies.add(InfiltratorBase4);
         Component[] listB5 = new Component[]{new Enemy(106, infilBase1Run, 106), new Location(206, new Point(615, 220))};
         InfiltratorBase5 = new Entity(listB5, 106);
+		enemies.add(InfiltratorBase5);
         Component[] listI1 = new Component[]{new Enemy(107, infil1Run, 107), new Location(207, new Point(600, 140))};
         Infiltrator1 = new Entity(listI1, 107);
+		enemies.add(Infiltrator1);
         Component[] listI2 = new Component[]{new Enemy(108, infil2Run, 108), new Location(208, new Point(600, 180))};
         Infiltrator2 = new Entity(listI2, 108);
+		enemies.add(Infiltrator2);
         Component[] listI3 = new Component[]{new Enemy(109, infil3Run, 109), new Location(209, new Point(600, 220))};
         Infiltrator3 = new Entity(listI3, 109);
+		enemies.add(Infiltrator3);
 	}
 
 	@Override
@@ -115,6 +131,25 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.S)){
 			Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x), (Auber.getComponent(1).getLocation().y) - 1));
+		}
+		if(Gdx.input.isKeyPressed(Input.Keys.SPACE)){
+			int AubX = Auber.getComponent(1).getLocation().x;
+			int AubY = Auber.getComponent(1).getLocation().y;
+			Entity ent = new Entity();
+
+			for(Entity e : enemies){
+				if(Math.abs(AubX - (e.getComponent(1).getLocation().x)) < 20 && Math.abs(AubY - (e.getComponent(1).getLocation().y)) < 20){
+					ent = e;
+				}
+			}
+			if(ent.getEntityID() != -1){
+				ent.getComponent(1).setLocation(new Point(20, 400));
+				ent.getComponent(0).setSprites(anims.get(anims.indexOf(ent.getComponent(0).getSprites()) + 1));
+				Auber.getComponent(1).setLocation(new Point(20, 440));
+			}
+		}
+		if(Gdx.input.isKeyPressed(Input.Keys.E)){
+			Auber.getComponent(1).setLocation(new Point(250, 360));
 		}
 
 		batch.begin();
@@ -148,6 +183,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		int entityID;
 
 		public Entity(){
+			this.entityID = -1;
 		}
 		public Entity(Component[] components1, int id){
 			this.components = components1;
@@ -188,6 +224,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		public abstract Animation<TextureRegion> getSprites();
 		public abstract Point getLocation();
 		public abstract void setLocation(Point p);
+		public abstract void setSprites(Animation<TextureRegion> anim);
 
 	}
 
@@ -207,6 +244,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		public Point getLocation(){return null;}
 		public void setLocation(Point p){}
+		public void setSprites(Animation<TextureRegion> anim){}
 	}
 
 	public class Enemy extends Character{
@@ -223,6 +261,9 @@ public class MyGdxGame extends ApplicationAdapter {
 			return super.getSprites();
 		}
 		public Point getLocation(){return null;}
+		public void setSprites(Animation<TextureRegion> anim){
+			this.sprites = anim;
+		}
 	}
 
 
@@ -243,6 +284,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			this.location = locIn;
 		}
 		public Animation<TextureRegion> getSprites(){return null;}
+		public void setSprites(Animation<TextureRegion> anim){}
 	}
 
 
