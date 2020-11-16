@@ -111,6 +111,13 @@ public class MyGdxGame extends ApplicationAdapter {
         Component[] listI3 = new Component[]{new Enemy(109, infil3Run, 109), new Location(209, new Point(600, 220))};
         Infiltrator3 = new Entity(listI3, 109);
 		enemies.add(Infiltrator3);
+		
+		
+		for(Entity enemy : enemies){
+			enemy.getComponent(0).DecideObjective();
+		}
+		
+		
 	}
 
 	@Override
@@ -150,7 +157,47 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.E)){
 			Auber.getComponent(1).setLocation(new Point(250, 360));
-		}
+		}	
+		
+		
+		
+		double xSpeed;
+		double ySpeed;
+		
+		for(Entity enemy : enemies){
+			
+			Point Target  = enemy.getComponent(0).GetObjective();
+			
+			if (!Target.equals(enemy.getComponent(1).getLocation())){
+				Double[] difference = {(Target.getX()- enemy.getComponent(1).getLocation().x),(Target.getY() - enemy.getComponent(1).getLocation().y)};
+				double angle = Math.atan(difference[1]/difference[0]);
+				double speed = 2;
+				xSpeed = speed*Math.cos(angle);
+				//System.out.println(difference[0]+" " +difference[1]);
+				//System.out.println(xSpeed);
+				ySpeed = speed*Math.sin(angle);
+				//System.out.println(enemy.getComponent(1).getLocation().x);
+				//System.out.println(xSpeed+ " "+ ySpeed);
+				
+				
+				if (difference[0]*xSpeed < 0) {
+					xSpeed = xSpeed*-1;
+				}
+				if (difference[1]*ySpeed < 0) {
+					ySpeed = ySpeed*-1;
+				}
+				
+			}
+			
+			else {
+				xSpeed = 0;
+				ySpeed = 0;
+			}
+			
+			enemy.getComponent(1).setLocation(new Point((int) (enemy.getComponent(1).getLocation().x + xSpeed) , (int) (enemy.getComponent(1).getLocation().y + ySpeed)));
+		}		
+		
+
 
 		batch.begin();
 		batch.draw(gameMap, 0, 0, 641, 480);
@@ -226,6 +273,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		public abstract void setLocation(Point p);
 		public abstract void setSprites(Animation<TextureRegion> anim);
 
+		public abstract void DecideObjective();
+		public abstract Point GetObjective();
 	}
 
 	public class Character extends Component {
@@ -245,10 +294,16 @@ public class MyGdxGame extends ApplicationAdapter {
 		public Point getLocation(){return null;}
 		public void setLocation(Point p){}
 		public void setSprites(Animation<TextureRegion> anim){}
+		
+		public void DecideObjective() {}
+		
+		public Point GetObjective() { return null;}
 	}
 
 	public class Enemy extends Character{
 		int enemyId;
+		
+		Point Target;
 
 		public Enemy(){
 		}
@@ -264,6 +319,20 @@ public class MyGdxGame extends ApplicationAdapter {
 		public void setSprites(Animation<TextureRegion> anim){
 			this.sprites = anim;
 		}
+		
+		public void DecideObjective() {
+			int randX = (int)(Math.random()*600);
+			int randY = (int)(Math.random()*450);
+			
+			this.Target  = new Point(randX,randY);
+		}
+		
+		public Point GetObjective() {
+			return this.Target;
+		}
+		
+		
+
 	}
 
 
@@ -285,6 +354,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		public Animation<TextureRegion> getSprites(){return null;}
 		public void setSprites(Animation<TextureRegion> anim){}
+		
+		public void DecideObjective() {};
+		public Point GetObjective() { return null;}
 	}
 
 
@@ -302,3 +374,15 @@ public class MyGdxGame extends ApplicationAdapter {
 //		public Point getLocation(){return null;}
 //	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
