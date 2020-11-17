@@ -2,7 +2,7 @@ com/mygdx/game/MyGdxGame.java
  com.mygdx.game.MyGdxGame
  com.mygdx.game.MyGdxGame$Character
  com.mygdx.game.MyGdxGame$Component
- com.mygdx.game.MyGdxGame$Controller
  com.mygdx.game.MyGdxGame$Enemy
  com.mygdx.game.MyGdxGame$Entity
  com.mygdx.game.MyGdxGame$Location
+ com.mygdx.game.MyGdxGame$Player

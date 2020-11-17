@@ -14,12 +14,16 @@ import java.util.ArrayList;
 public class MyGdxGame extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture gameMap;
+	Texture hurtMap;
 	TextureAtlas textureAtlas;
+	boolean hurt = false;
+	BitmapFont font;
 
 	OrthographicCamera camera;
 
 	float stateTime;
 	Animation<TextureRegion> auberRun;
+	Animation<TextureRegion> auberRunHurt;
 	Animation<TextureRegion> infil1Run;
 	Animation<TextureRegion> infil2Run;
 	Animation<TextureRegion> infil3Run;
@@ -49,7 +53,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void create () {
 		batch = new SpriteBatch();
 		gameMap = new Texture("GameMap.jpg");
+		hurtMap = new Texture("GameMapHurt.png");
 		textureAtlas = new TextureAtlas("spriteSheet1.txt");
+		font = new BitmapFont();
 
 		Gdx.graphics.setContinuousRendering(true);
 		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
@@ -57,6 +63,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		auberRun = new Animation(0.3f, textureAtlas.findRegions("AuberSprite"));
 		auberRun.setPlayMode(Animation.PlayMode.LOOP);
+		auberRunHurt = new Animation(0.5f, textureAtlas.findRegions("AuberHurtSprite"));
+		auberRunHurt.setPlayMode(Animation.PlayMode.LOOP);
 
 
 		infil1Run = new Animation(0.3f, textureAtlas.findRegions("Infiltrator1Sprite"));
@@ -84,7 +92,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 641, 700);
 
-        Component[] listA = new Component[]{new Enemy(101, auberRun, 101), new Location(201, new Point(20, 440))};
+        Component[] listA = new Component[]{new Player(101, auberRun), new Location(201, new Point(20, 440))};
         Auber = new Entity(listA, 101);
 
 		Component[] listB1 = new Component[]{new Enemy(102, infilBase1Run, 102), new Location(202, new Point(615, 140))};
@@ -111,13 +119,10 @@ public class MyGdxGame extends ApplicationAdapter {
         Component[] listI3 = new Component[]{new Enemy(109, infil3Run, 109), new Location(209, new Point(600, 220))};
         Infiltrator3 = new Entity(listI3, 109);
 		enemies.add(Infiltrator3);
-		
-		
-		for(Entity enemy : enemies){
-			enemy.getComponent(0).DecideObjective();
-		}
-		
-		
+
+        for(Entity enemy : enemies){
+            enemy.getComponent(0).DecideObjective();
+        }
 	}
 
 	@Override
@@ -126,6 +131,23 @@ public class MyGdxGame extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		stateTime += Gdx.graphics.getDeltaTime();
 		TextureRegion currentFrame = auberRun.getKeyFrame(stateTime);
+
+
+		if(Auber.getComponent(0).getHealth() < 50) {
+			Auber.getComponent(0).setSprites(auberRunHurt);
+			hurt = true;
+		}
+		else if(Auber.getComponent(0).getHealth()>50){
+			Auber.getComponent(0).setSprites(auberRun);
+			hurt = false;
+		}
+
+		for(Entity e : enemies){
+			if(checkCollide(Auber.getComponent(1).getLocation(), e.getComponent(1).getLocation(), 20) && ((int)(Math.random()*10) > 6) && !(e.getComponent(0).getCaught()))
+			{
+				Auber.getComponent(0).setHealth(Auber.getComponent(0).getHealth() - ((int)(Math.random()*5)));
+			}
+		}
 
 		if(Gdx.input.isKeyPressed(Input.Keys.A)){
 			Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x) - 1, (Auber.getComponent(1).getLocation().y)));
@@ -145,62 +167,61 @@ public class MyGdxGame extends ApplicationAdapter {
 			Entity ent = new Entity();
 
 			for(Entity e : enemies){
-				if(Math.abs(AubX - (e.getComponent(1).getLocation().x)) < 20 && Math.abs(AubY - (e.getComponent(1).getLocation().y)) < 20){
+				if(checkCollide(Auber.getComponent(1).getLocation(), e.getComponent(1).getLocation(), 20)){
 					ent = e;
 				}
 			}
 			if(ent.getEntityID() != -1){
-				ent.getComponent(1).setLocation(new Point(20, 400));
+				ent.getComponent(1).setLocation(new Point(20 + ((int)(Math.random()*60)), 400 - ((int)(Math.random()*40))));
 				ent.getComponent(0).setSprites(anims.get(anims.indexOf(ent.getComponent(0).getSprites()) + 1));
+				ent.getComponent(0).setCaught(true);
 				Auber.getComponent(1).setLocation(new Point(20, 440));
 			}
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.E)){
-			Auber.getComponent(1).setLocation(new Point(250, 360));
-		}	
-		
-		
-		
-		double xSpeed;
-		double ySpeed;
-		
-		for(Entity enemy : enemies){
-			
-			Point Target  = enemy.getComponent(0).GetObjective();
-			
-			if (!Target.equals(enemy.getComponent(1).getLocation())){
-				Double[] difference = {(Target.getX()- enemy.getComponent(1).getLocation().x),(Target.getY() - enemy.getComponent(1).getLocation().y)};
-				double angle = Math.atan(difference[1]/difference[0]);
-				double speed = 2;
-				xSpeed = speed*Math.cos(angle);
-				//System.out.println(difference[0]+" " +difference[1]);
-				//System.out.println(xSpeed);
-				ySpeed = speed*Math.sin(angle);
-				//System.out.println(enemy.getComponent(1).getLocation().x);
-				//System.out.println(xSpeed+ " "+ ySpeed);
-				
-				
-				if (difference[0]*xSpeed < 0) {
-					xSpeed = xSpeed*-1;
-				}
-				if (difference[1]*ySpeed < 0) {
-					ySpeed = ySpeed*-1;
-				}
-				
+			if(checkCollide(Auber.getComponent(1).getLocation(), new Point(55, 250), 20)){
+				Auber.getComponent(1).setLocation(new Point(455, 150));
 			}
-			
-			else {
-				xSpeed = 0;
-				ySpeed = 0;
+			else if(checkCollide(Auber.getComponent(1).getLocation(), new Point(460, 145), 20)){
+				Auber.getComponent(1).setLocation(new Point(50, 255));
 			}
-			
-			enemy.getComponent(1).setLocation(new Point((int) (enemy.getComponent(1).getLocation().x + xSpeed) , (int) (enemy.getComponent(1).getLocation().y + ySpeed)));
-		}		
-		
+			else if(checkCollide(Auber.getComponent(1).getLocation(), new Point(520, 440), 20)){
+				Auber.getComponent(1).setLocation(new Point(513, 65));
+			}
+			else if(checkCollide(Auber.getComponent(1).getLocation(), new Point(515,60), 20)){
+				Auber.getComponent(1).setLocation(new Point(517, 443));
+			}
+			else{
+				Auber.getComponent(1).setLocation(new Point(250, 360));
+				Auber.getComponent(0).setHealth(100);
+			}
+		}
+
+        for(Entity enemy : enemies){
+
+        	Point target = enemy.getComponent(0).GetObjective();
+
+        	if(!enemy.getComponent(0).getCaught()){
+
+       			if(enemy.getComponent(1).getLocation().x < target.x){
+					enemy.getComponent(1).setX(enemy.getComponent(1).getLocation().x + 1);
+				}
+				if(enemy.getComponent(1).getLocation().x > target.x){
+					enemy.getComponent(1).setX(enemy.getComponent(1).getLocation().x - 1);
+				}
+				if(enemy.getComponent(1).getLocation().y < target.y){
+					enemy.getComponent(1).setY(enemy.getComponent(1).getLocation().y + 1);
+				}
+				if(enemy.getComponent(1).getLocation().y > target.y){
+					enemy.getComponent(1).setY(enemy.getComponent(1).getLocation().y - 1);
+				}
+        	}
+        }
 
 
-		batch.begin();
+        batch.begin();
 		batch.draw(gameMap, 0, 0, 641, 480);
+		font.draw(batch, Integer.toString(Auber.getComponent(0).getHealth()), 1, 479);
 
         batch.draw(Auber.getComponent(0).getSprites().getKeyFrame(stateTime), Auber.getComponent(1).getLocation().x, Auber.getComponent(1).getLocation().y);
 		batch.draw(InfiltratorBase1.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase1.getComponent(1).getLocation().x, InfiltratorBase1.getComponent(1).getLocation().y);
@@ -212,8 +233,10 @@ public class MyGdxGame extends ApplicationAdapter {
         batch.draw(Infiltrator2.getComponent(0).getSprites().getKeyFrame(stateTime), Infiltrator2.getComponent(1).getLocation().x, Infiltrator2.getComponent(1).getLocation().y);
         batch.draw(Infiltrator3.getComponent(0).getSprites().getKeyFrame(stateTime), Infiltrator3.getComponent(1).getLocation().x, Infiltrator3.getComponent(1).getLocation().y);
 
+        if(hurt){
+        	batch.draw(hurtMap,0, 0, 641, 480);
+		}
 		batch.end();
-
 	}
 
 	@Override
@@ -223,7 +246,14 @@ public class MyGdxGame extends ApplicationAdapter {
         batch.dispose();
     }
 
-
+    public boolean checkCollide(Point p1, Point p2, int size){
+		if(Math.abs(p1.x - p2.x) < size && Math.abs(p1.y - p2.y) < 20){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
 
 	public class Entity{
 		Component[] components;
@@ -255,7 +285,6 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		public Component(){
 		}
-
 		public Component(int i){
 			componentId = i;
 			components.add(i);
@@ -272,17 +301,22 @@ public class MyGdxGame extends ApplicationAdapter {
 		public abstract Point getLocation();
 		public abstract void setLocation(Point p);
 		public abstract void setSprites(Animation<TextureRegion> anim);
+        public abstract void DecideObjective();
+        public abstract Point GetObjective();
+        public abstract boolean getCaught();
+        public abstract void setCaught(boolean arrest);
+        public abstract void setX(int x);
+        public abstract void setY(int y);
+        public abstract int getHealth();
+        public abstract void setHealth(int healthIn);
 
-		public abstract void DecideObjective();
-		public abstract Point GetObjective();
 	}
 
-	public class Character extends Component {
+	public abstract class Character extends Component {
 		Animation<TextureRegion> sprites;
 
 		public Character() {
 		}
-
 		public Character(int i, Animation<TextureRegion> spriteSet) {
 			super(i);
 			this.sprites = spriteSet;
@@ -291,19 +325,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		public Animation<TextureRegion> getSprites() {
 			return sprites;
 		}
-		public Point getLocation(){return null;}
-		public void setLocation(Point p){}
-		public void setSprites(Animation<TextureRegion> anim){}
-		
-		public void DecideObjective() {}
-		
-		public Point GetObjective() { return null;}
 	}
 
 	public class Enemy extends Character{
 		int enemyId;
-		
-		Point Target;
+        Point Target;
+        boolean isCaught;
 
 		public Enemy(){
 		}
@@ -316,25 +343,53 @@ public class MyGdxGame extends ApplicationAdapter {
 			return super.getSprites();
 		}
 		public Point getLocation(){return null;}
+		public void setLocation(Point loc){}
+		public void setX(int x){}
+		public void setY(int y){}
+		public int getHealth(){return -1;}
+		public void setHealth(int healthIn){}
 		public void setSprites(Animation<TextureRegion> anim){
 			this.sprites = anim;
 		}
-		
-		public void DecideObjective() {
-			int randX = (int)(Math.random()*600);
-			int randY = (int)(Math.random()*450);
-			
-			this.Target  = new Point(randX,randY);
-		}
-		
-		public Point GetObjective() {
-			return this.Target;
-		}
-		
-		
-
+		public boolean getCaught(){return isCaught;}
+		public void setCaught(boolean arrest){this.isCaught = arrest;}
+        public void DecideObjective() {
+            int randX = (int)(Math.random()*600);
+            int randY = (int)(Math.random()*450);
+            this.Target  = new Point(randX,randY);
+        }
+        public Point GetObjective() {
+		    if(this.isCaught) {
+                return null;
+            }
+		    else {
+                return this.Target;
+            }
+        }
 	}
 
+	public class Player extends Character{
+		int health = 100;
+
+		public Player(){}
+		public Player(int i, Animation<TextureRegion> spriteSet){
+			super(i, spriteSet);
+		}
+
+		public Point getLocation(){return null;}
+		public void setLocation(Point locIn){}
+		public void setX(int x){}
+		public void setY(int y){}
+		public Animation<TextureRegion> getSprites(){return super.getSprites();}
+		public void setSprites(Animation<TextureRegion> anim){this.sprites = anim;}
+		public int getHealth(){return health;}
+		public void setHealth(int healthIn){this.health = healthIn;}
+		public void DecideObjective() {};
+		public Point GetObjective() { return null;}
+		public  boolean getCaught(){return false;}
+		public void setCaught(boolean arrest){}
+
+	}
 
 	public class Location extends Component{
 		Point location;
@@ -352,37 +407,15 @@ public class MyGdxGame extends ApplicationAdapter {
 		public void setLocation(Point locIn){
 			this.location = locIn;
 		}
+		public void setX(int x){ this.location.x = x;}
+		public void setY(int y){this.location.y = y;}
 		public Animation<TextureRegion> getSprites(){return null;}
 		public void setSprites(Animation<TextureRegion> anim){}
-		
-		public void DecideObjective() {};
-		public Point GetObjective() { return null;}
+        public void DecideObjective() {};
+        public Point GetObjective() { return null;}
+        public  boolean getCaught(){return false;}
+        public void setCaught(boolean arrest){}
+        public int getHealth(){return -1;}
+        public void setHealth(int healthIn){}
 	}
-
-
-	public abstract class Controller extends Component{
-		public Controller(){}
-
-	}
-
-//	public class UserInputs extends Controller implements InputProcessor{
-//		public UserInputs(){}
-//
-//		public boolean keyDown(int i){return Input.isKeyDown(i);}
-//
-//		public Animation<TextureRegion> getSprites() { return null; }
-//		public Point getLocation(){return null;}
-//	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
