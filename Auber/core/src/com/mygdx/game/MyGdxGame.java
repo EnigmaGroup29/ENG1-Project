@@ -8,13 +8,15 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.awt.*;
 import java.util.ArrayList;
 
 public class MyGdxGame extends ApplicationAdapter {
 	SpriteBatch batch;
-	Texture gameMap;
+	Sprite gameMap;
 	Texture hurtMap;
 	TextureAtlas textureAtlas;
 	boolean hurt = false;
@@ -22,6 +24,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	Pixmap pixels;
 
 	OrthographicCamera camera;
+	Viewport viewport;
 
 	float stateTime;
 	Animation<TextureRegion> auberRun;
@@ -50,15 +53,16 @@ public class MyGdxGame extends ApplicationAdapter {
 	ArrayList<Entity> enemies = new ArrayList<Entity>();
 	ArrayList<Animation> anims  = new ArrayList<Animation>();
 
-
 	//@Override
 	public void create () {
 		batch = new SpriteBatch();
-		gameMap = new Texture("GameMap.jpg");
+		gameMap = new Sprite(new Texture("GameMap1.jpg"));
+		gameMap.setPosition(0,0);
+		gameMap.setSize(1131,548);
 		hurtMap = new Texture("GameMapHurt.png");
 		textureAtlas = new TextureAtlas("spriteSheet1.txt");
 		font = new BitmapFont();
-		pixels = new Pixmap(Gdx.files.internal("GameMap.jpg"));
+		pixels = new Pixmap(Gdx.files.internal("GameMap1.jpg"));
 
 		Gdx.graphics.setContinuousRendering(true);
 		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
@@ -92,34 +96,38 @@ public class MyGdxGame extends ApplicationAdapter {
 		anims.add(infilBase1Arrest);
 
 
-		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 641, 700);
+		float aspectRatio = (float)Gdx.graphics.getHeight()/(float)Gdx.graphics.getWidth();
 
-        Component[] listA = new Component[]{new Player(101, auberRun), new Location(201, new Point(20, 440))};
+		camera = new OrthographicCamera(548 * aspectRatio, 548);
+		camera.position.set(camera.viewportWidth/2,camera.viewportHeight/2,0);
+		viewport = new FitViewport(1131, 548, camera);
+		viewport.apply();
+
+        Component[] listA = new Component[]{new Player(101, auberRun), new Location(201, new Point(30, 500))};
         Auber = new Entity(listA, 101);
 
-		Component[] listB1 = new Component[]{new Enemy(102, infilBase1Run, 102), new Location(202, new Point(615, 140))};
+		Component[] listB1 = new Component[]{new Enemy(102, infilBase1Run, 102), new Location(202, new Point(1100, 280))};
 		InfiltratorBase1 = new Entity(listB1, 102);
 		enemies.add(InfiltratorBase1);
-        Component[] listB2 = new Component[]{new Enemy(103, infilBase1Run, 103), new Location(203, new Point(615, 160))};
+        Component[] listB2 = new Component[]{new Enemy(103, infilBase1Run, 103), new Location(203, new Point(1100, 250))};
         InfiltratorBase2 = new Entity(listB2, 103);
 		enemies.add(InfiltratorBase2);
-        Component[] listB3 = new Component[]{new Enemy(104, infilBase1Run, 104), new Location(204, new Point(615, 180))};
+        Component[] listB3 = new Component[]{new Enemy(104, infilBase1Run, 104), new Location(204, new Point(1100, 220))};
         InfiltratorBase3 = new Entity(listB3, 104);
 		enemies.add(InfiltratorBase3);
-        Component[] listB4 = new Component[]{new Enemy(105, infilBase1Run, 105), new Location(205, new Point(615, 200))};
+        Component[] listB4 = new Component[]{new Enemy(105, infilBase1Run, 105), new Location(205, new Point(1100, 190))};
         InfiltratorBase4 = new Entity(listB4, 105);
 		enemies.add(InfiltratorBase4);
-        Component[] listB5 = new Component[]{new Enemy(106, infilBase1Run, 106), new Location(206, new Point(615, 220))};
+        Component[] listB5 = new Component[]{new Enemy(106, infilBase1Run, 106), new Location(206, new Point(1100, 160))};
         InfiltratorBase5 = new Entity(listB5, 106);
 		enemies.add(InfiltratorBase5);
-        Component[] listI1 = new Component[]{new Enemy(107, infil1Run, 107), new Location(207, new Point(600, 140))};
+        Component[] listI1 = new Component[]{new Enemy(107, infil1Run, 107), new Location(207, new Point(1070, 280))};
         Infiltrator1 = new Entity(listI1, 107);
 		enemies.add(Infiltrator1);
-        Component[] listI2 = new Component[]{new Enemy(108, infil2Run, 108), new Location(208, new Point(600, 180))};
+        Component[] listI2 = new Component[]{new Enemy(108, infil2Run, 108), new Location(208, new Point(1070, 220))};
         Infiltrator2 = new Entity(listI2, 108);
 		enemies.add(Infiltrator2);
-        Component[] listI3 = new Component[]{new Enemy(109, infil3Run, 109), new Location(209, new Point(600, 220))};
+        Component[] listI3 = new Component[]{new Enemy(109, infil3Run, 109), new Location(209, new Point(1070, 160))};
         Infiltrator3 = new Entity(listI3, 109);
 		enemies.add(Infiltrator3);
 
@@ -130,7 +138,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		stateTime += Gdx.graphics.getDeltaTime();
 		int AubX = Auber.getComponent(1).getLocation().x;
@@ -152,49 +160,50 @@ public class MyGdxGame extends ApplicationAdapter {
 			}
 		}
 
-		if(Gdx.input.isKeyPressed(Input.Keys.A) && !checkWalls(AubX - 1, AubY)){
+		if(Gdx.input.isKeyPressed(Input.Keys.A) && !checkWalls(AubX - 1, AubY) && !checkWalls(AubX - 1, AubY + 5) && !checkWalls(AubX - 1, AubY + 10) && !checkWalls(AubX - 1, AubY + 15) && !checkWalls(AubX - 1, AubY + 20)){
 			Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x) - 1, (Auber.getComponent(1).getLocation().y)));
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.D) && !checkWalls(AubX + 1, AubY)){
+		if(Gdx.input.isKeyPressed(Input.Keys.D) && !checkWalls(AubX + 21, AubY) && !checkWalls(AubX + 21, AubY + 5) && !checkWalls(AubX + 21, AubY + 10) && !checkWalls(AubX + 21, AubY + 15) && !checkWalls(AubX + 21, AubY + 20)){
 			Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x) + 1, (Auber.getComponent(1).getLocation().y)));
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.W) && !checkWalls(AubX, AubY + 1)){
+		if(Gdx.input.isKeyPressed(Input.Keys.W) && !checkWalls(AubX, AubY + 21) && !checkWalls(AubX + 5, AubY + 21) && !checkWalls(AubX + 10, AubY + 21) && !checkWalls(AubX + 15, AubY + 21) && !checkWalls(AubX + 20, AubY + 21)){
 			Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x), (Auber.getComponent(1).getLocation().y) + 1));
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.S) && !checkWalls(AubX, AubY - 1)){
+		if(Gdx.input.isKeyPressed(Input.Keys.S) && !checkWalls(AubX, AubY - 1) && !checkWalls(AubX + 5, AubY - 1) && !checkWalls(AubX + 10, AubY - 1)&& !checkWalls(AubX + 15, AubY - 1)&& !checkWalls(AubX + 20, AubY - 1)){
 			Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x), (Auber.getComponent(1).getLocation().y) - 1));
 		}
+
 		if(Gdx.input.isKeyPressed(Input.Keys.SPACE)){
-			Entity ent = new Entity();
-			for(Entity e : enemies){
-				if(checkCollide(Auber.getComponent(1).getLocation(), e.getComponent(1).getLocation(), 20) && !e.getComponent(0).getCaught()){
-					ent = e;
-				}
+			if(checkCollide(Auber.getComponent(1).getLocation(), new Point(921, 510), 30)){
+				Auber.getComponent(1).setLocation(new Point(914, 80));
 			}
-			if(ent.getEntityID() != -1){
-				ent.getComponent(1).setLocation(new Point(20 + ((int)(Math.random()*60)), 400 - ((int)(Math.random()*40))));
-				ent.getComponent(0).setSprites(anims.get(anims.indexOf(ent.getComponent(0).getSprites()) + 1));
-				ent.getComponent(0).setCaught(true);
-				Auber.getComponent(1).setLocation(new Point(20, 440));
+			else if(checkCollide(Auber.getComponent(1).getLocation(), new Point(914, 80), 30)){
+				Auber.getComponent(1).setLocation(new Point(921, 510));
+			}
+			else if(checkCollide(Auber.getComponent(1).getLocation(), new Point(814, 178), 30)){
+				Auber.getComponent(1).setLocation(new Point(96, 296));
+			}
+			else if(checkCollide(Auber.getComponent(1).getLocation(), new Point(96,296), 30)){
+				Auber.getComponent(1).setLocation(new Point(814, 178));
+			}
+			else {
+				Entity ent = new Entity();
+				for (Entity e : enemies) {
+					if (checkCollide(Auber.getComponent(1).getLocation(), e.getComponent(1).getLocation(), 20) && !e.getComponent(0).getCaught()) {
+						ent = e;
+					}
+				}
+				if (ent.getEntityID() != -1) {
+					ent.getComponent(1).setLocation(new Point(30 + ((int) (Math.random() * 60)), 450 - ((int) (Math.random() * 40))));
+					ent.getComponent(0).setSprites(anims.get(anims.indexOf(ent.getComponent(0).getSprites()) + 1));
+					ent.getComponent(0).setCaught(true);
+					Auber.getComponent(1).setLocation(new Point(30, 500));
+				}
 			}
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.E)){
-			if(checkCollide(Auber.getComponent(1).getLocation(), new Point(55, 250), 20)){
-				Auber.getComponent(1).setLocation(new Point(455, 150));
-			}
-			else if(checkCollide(Auber.getComponent(1).getLocation(), new Point(460, 145), 20)){
-				Auber.getComponent(1).setLocation(new Point(50, 255));
-			}
-			else if(checkCollide(Auber.getComponent(1).getLocation(), new Point(520, 440), 20)){
-				Auber.getComponent(1).setLocation(new Point(513, 65));
-			}
-			else if(checkCollide(Auber.getComponent(1).getLocation(), new Point(515,60), 20)){
-				Auber.getComponent(1).setLocation(new Point(517, 443));
-			}
-			else{
-				Auber.getComponent(1).setLocation(new Point(250, 360));
+				Auber.getComponent(1).setLocation(new Point(480, (int)(camera.viewportHeight - 120)));
 				Auber.getComponent(0).setHealth(100);
-			}
 		}
 
         for(Entity enemy : enemies){
@@ -204,23 +213,24 @@ public class MyGdxGame extends ApplicationAdapter {
         	if(!enemy.getComponent(0).getCaught()){
 
        			if(enemy.getComponent(1).getLocation().x < target.x){
-					enemy.getComponent(1).setX(enemy.getComponent(1).getLocation().x + 1);
+					enemy.getComponent(1).setX(enemy.getComponent(1).getLocation().x + 2);
 				}
 				if(enemy.getComponent(1).getLocation().x > target.x){
-					enemy.getComponent(1).setX(enemy.getComponent(1).getLocation().x - 1);
+					enemy.getComponent(1).setX(enemy.getComponent(1).getLocation().x - 2);
 				}
 				if(enemy.getComponent(1).getLocation().y < target.y){
-					enemy.getComponent(1).setY(enemy.getComponent(1).getLocation().y + 1);
+					enemy.getComponent(1).setY(enemy.getComponent(1).getLocation().y + 2);
 				}
 				if(enemy.getComponent(1).getLocation().y > target.y){
-					enemy.getComponent(1).setY(enemy.getComponent(1).getLocation().y - 1);
+					enemy.getComponent(1).setY(enemy.getComponent(1).getLocation().y - 2);
 				}
         	}
         }
 
-
+		camera.update();
+        batch.setProjectionMatrix(camera.combined);
         batch.begin();
-		batch.draw(gameMap, 0, 0, 641, 480);
+		gameMap.draw(batch);
 		font.draw(batch, Integer.toString(Auber.getComponent(0).getHealth()), 1, 479);
 
         batch.draw(Auber.getComponent(0).getSprites().getKeyFrame(stateTime), Auber.getComponent(1).getLocation().x, Auber.getComponent(1).getLocation().y);
@@ -241,10 +251,15 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	@Override
 	public void dispose () {
-        gameMap.dispose();
+        gameMap.getTexture().dispose();
         textureAtlas.dispose();
         batch.dispose();
     }
+
+	public void resize(int width, int height) {
+		viewport.update(width, height);
+		camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
+	}
 
     public boolean checkCollide(Point p1, Point p2, int size){
 		if(Math.abs(p1.x - p2.x) < size && Math.abs(p1.y - p2.y) < 20){
@@ -254,14 +269,14 @@ public class MyGdxGame extends ApplicationAdapter {
 			return false;
 		}
 	}
-	public boolean checkWalls(int x, int invY){
-	    int y = 480 - invY;
-	    if(pixels.getPixel(x, y) == 0x000000ff){
-	        return true;
-        }
-	    else{
-	    return false;
-        }
+	public boolean checkWalls(int x, int yIn){
+			int y = 548 - yIn;
+			if (pixels.getPixel(x, y) == 0x000000ff) {
+				return true;
+			}
+			else {
+				return false;
+			}
 	}
 
 	public class Entity{
@@ -363,8 +378,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		public boolean getCaught(){return isCaught;}
 		public void setCaught(boolean arrest){this.isCaught = arrest;}
         public void DecideObjective() {
-            int randX = (int)(Math.random()*600);
-            int randY = (int)(Math.random()*450);
+            int randX = 10 + (int)(Math.random()*1100);
+            int randY = 20 + (int)(Math.random()*500);
             this.Target  = new Point(randX,randY);
         }
         public Point GetObjective() {
