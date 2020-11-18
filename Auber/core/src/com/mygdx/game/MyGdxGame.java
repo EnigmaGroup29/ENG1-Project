@@ -2,6 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.Graphics;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -18,6 +19,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	TextureAtlas textureAtlas;
 	boolean hurt = false;
 	BitmapFont font;
+	Pixmap pixels;
 
 	OrthographicCamera camera;
 
@@ -56,6 +58,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		hurtMap = new Texture("GameMapHurt.png");
 		textureAtlas = new TextureAtlas("spriteSheet1.txt");
 		font = new BitmapFont();
+		pixels = new Pixmap(Gdx.files.internal("GameMap.jpg"));
 
 		Gdx.graphics.setContinuousRendering(true);
 		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
@@ -130,8 +133,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		stateTime += Gdx.graphics.getDeltaTime();
-		TextureRegion currentFrame = auberRun.getKeyFrame(stateTime);
-
+		int AubX = Auber.getComponent(1).getLocation().x;
+        int AubY = Auber.getComponent(1).getLocation().y;
 
 		if(Auber.getComponent(0).getHealth() < 50) {
 			Auber.getComponent(0).setSprites(auberRunHurt);
@@ -149,25 +152,22 @@ public class MyGdxGame extends ApplicationAdapter {
 			}
 		}
 
-		if(Gdx.input.isKeyPressed(Input.Keys.A)){
+		if(Gdx.input.isKeyPressed(Input.Keys.A) && !checkWalls(AubX - 1, AubY)){
 			Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x) - 1, (Auber.getComponent(1).getLocation().y)));
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.D)){
+		if(Gdx.input.isKeyPressed(Input.Keys.D) && !checkWalls(AubX + 1, AubY)){
 			Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x) + 1, (Auber.getComponent(1).getLocation().y)));
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.W)){
+		if(Gdx.input.isKeyPressed(Input.Keys.W) && !checkWalls(AubX, AubY + 1)){
 			Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x), (Auber.getComponent(1).getLocation().y) + 1));
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.S)){
+		if(Gdx.input.isKeyPressed(Input.Keys.S) && !checkWalls(AubX, AubY - 1)){
 			Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x), (Auber.getComponent(1).getLocation().y) - 1));
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.SPACE)){
-			int AubX = Auber.getComponent(1).getLocation().x;
-			int AubY = Auber.getComponent(1).getLocation().y;
 			Entity ent = new Entity();
-
 			for(Entity e : enemies){
-				if(checkCollide(Auber.getComponent(1).getLocation(), e.getComponent(1).getLocation(), 20)){
+				if(checkCollide(Auber.getComponent(1).getLocation(), e.getComponent(1).getLocation(), 20) && !e.getComponent(0).getCaught()){
 					ent = e;
 				}
 			}
@@ -253,6 +253,15 @@ public class MyGdxGame extends ApplicationAdapter {
 		else{
 			return false;
 		}
+	}
+	public boolean checkWalls(int x, int invY){
+	    int y = 480 - invY;
+	    if(pixels.getPixel(x, y) == 0x000000ff){
+	        return true;
+        }
+	    else{
+	    return false;
+        }
 	}
 
 	public class Entity{
