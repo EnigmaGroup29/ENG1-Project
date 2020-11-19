@@ -5,4 +5,5 @@ com/mygdx/game/MyGdxGame.java
  com.mygdx.game.MyGdxGame$Enemy
  com.mygdx.game.MyGdxGame$Entity
  com.mygdx.game.MyGdxGame$Location
+ com.mygdx.game.MyGdxGame$Node
  com.mygdx.game.MyGdxGame$Player

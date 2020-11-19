@@ -13,15 +13,25 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MyGdxGame extends ApplicationAdapter {
 	SpriteBatch batch;
 	Sprite gameMap;
-	Texture hurtMap;
+	Sprite hurtMap;
+	Sprite infoScreen;
+	Sprite paused;
+	Sprite win;
+	Sprite lose;
 	TextureAtlas textureAtlas;
 	boolean hurt = false;
+	int damage = 0;
 	BitmapFont font;
 	Pixmap pixels;
+	int charSpeed = 2;
+	int teleDelay = 0;
+	int gameState = 0;
+	int arrestCount = 0;
 
 	OrthographicCamera camera;
 	Viewport viewport;
@@ -53,16 +63,80 @@ public class MyGdxGame extends ApplicationAdapter {
 	ArrayList<Entity> enemies = new ArrayList<Entity>();
 	ArrayList<Animation> anims  = new ArrayList<Animation>();
 
+	ArrayList<Node> nodeList = new ArrayList<Node>();
+
+	Node n1;
+	Node n2;
+	Node n3;
+	Node n4;
+	Node n5;
+	Node n6;
+	Node n7;
+	Node n8;
+	Node n9;
+	Node n10;
+	Node n11;
+	Node n12;
+	Node n13;
+	Node n14;
+	Node n15;
+	Node n16;
+	Node n17;
+	Node n18;
+	Node n19;
+	Node n20;
+	Node n21;
+	Node n22;
+	Node n23;
+	Node n24;
+	Node n25;
+	Node n26;
+	Node n27;
+	Node n28;
+	Node n29;
+	Node n30;
+	Node n31;
+	Node n32;
+	Node n33;
+	Node n34;
+	Node n35;
+	Node n36;
+	Node n37;
+	Node n38;
+	Node n39;
+	Node n40;
+	Node n41;
+	Node n42;
+	Node n43;
+	Node n44;
+
+
 	//@Override
 	public void create () {
 		batch = new SpriteBatch();
 		gameMap = new Sprite(new Texture("GameMap1.jpg"));
 		gameMap.setPosition(0,0);
 		gameMap.setSize(1131,548);
-		hurtMap = new Texture("GameMapHurt.png");
+		hurtMap = new Sprite(new Texture("GameMapHurt.png"));
+		hurtMap.setPosition(0,0);
+		hurtMap.setSize(1131, 548);
+		infoScreen = new Sprite(new Texture("GameInfoScreen.png"));
+		infoScreen.setPosition(0,0);
+		infoScreen.setSize(1131,548);
+		paused = new Sprite(new Texture("GameInfoPaused.png"));
+		paused.setPosition(0,0);
+		paused.setSize(1131,548);
+		win = new Sprite(new Texture("GameWin.png"));
+		win.setPosition(0,0);
+		win.setSize(1131,548);
+		lose = new Sprite(new Texture("GameLose.png"));
+		lose.setPosition(0,0);
+		lose.setSize(1131,548);
 		textureAtlas = new TextureAtlas("spriteSheet1.txt");
 		font = new BitmapFont();
 		pixels = new Pixmap(Gdx.files.internal("GameMap1.jpg"));
+
+		makeNodes();
 
 		Gdx.graphics.setContinuousRendering(true);
 		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
@@ -106,30 +180,40 @@ public class MyGdxGame extends ApplicationAdapter {
         Component[] listA = new Component[]{new Player(101, auberRun), new Location(201, new Point(30, 500))};
         Auber = new Entity(listA, 101);
 
-		Component[] listB1 = new Component[]{new Enemy(102, infilBase1Run, 102), new Location(202, new Point(1100, 280))};
+		Component[] listB1 = new Component[]{new Enemy(102, infilBase1Run, 102, n25), new Location(202, n25.getCoords())};
 		InfiltratorBase1 = new Entity(listB1, 102);
 		enemies.add(InfiltratorBase1);
-        Component[] listB2 = new Component[]{new Enemy(103, infilBase1Run, 103), new Location(203, new Point(1100, 250))};
+		InfiltratorBase1.getComponent(0).DecideObjective();
+        Component[] listB2 = new Component[]{new Enemy(103, infilBase1Run, 103, n29), new Location(203, n29.getCoords())};
         InfiltratorBase2 = new Entity(listB2, 103);
 		enemies.add(InfiltratorBase2);
-        Component[] listB3 = new Component[]{new Enemy(104, infilBase1Run, 104), new Location(204, new Point(1100, 220))};
+		InfiltratorBase2.getComponent(0).DecideObjective();
+        Component[] listB3 = new Component[]{new Enemy(104, infilBase1Run, 104, n32), new Location(204, n32.getCoords())};
         InfiltratorBase3 = new Entity(listB3, 104);
 		enemies.add(InfiltratorBase3);
-        Component[] listB4 = new Component[]{new Enemy(105, infilBase1Run, 105), new Location(205, new Point(1100, 190))};
+		InfiltratorBase3.getComponent(0).DecideObjective();
+		Component[] listB4 = new Component[]{new Enemy(105, infilBase1Run, 105, n33), new Location(205, n33.getCoords())};
         InfiltratorBase4 = new Entity(listB4, 105);
 		enemies.add(InfiltratorBase4);
-        Component[] listB5 = new Component[]{new Enemy(106, infilBase1Run, 106), new Location(206, new Point(1100, 160))};
+		InfiltratorBase4.getComponent(0).DecideObjective();
+        Component[] listB5 = new Component[]{new Enemy(106, infilBase1Run, 106, n30), new Location(206, n30.getCoords())};
         InfiltratorBase5 = new Entity(listB5, 106);
 		enemies.add(InfiltratorBase5);
-        Component[] listI1 = new Component[]{new Enemy(107, infil1Run, 107), new Location(207, new Point(1070, 280))};
+		InfiltratorBase5.getComponent(0).DecideObjective();
+        Component[] listI1 = new Component[]{new Enemy(107, infil1Run, 107, n24), new Location(207, n24.getCoords())};
         Infiltrator1 = new Entity(listI1, 107);
 		enemies.add(Infiltrator1);
-        Component[] listI2 = new Component[]{new Enemy(108, infil2Run, 108), new Location(208, new Point(1070, 220))};
+		Infiltrator1.getComponent(0).DecideObjective();
+        Component[] listI2 = new Component[]{new Enemy(108, infil2Run, 108, n35), new Location(208, n35.getCoords())};
         Infiltrator2 = new Entity(listI2, 108);
 		enemies.add(Infiltrator2);
-        Component[] listI3 = new Component[]{new Enemy(109, infil3Run, 109), new Location(209, new Point(1070, 160))};
+		Infiltrator2.getComponent(0).DecideObjective();
+        Component[] listI3 = new Component[]{new Enemy(109, infil3Run, 109, n34), new Location(209, n34.getCoords())};
         Infiltrator3 = new Entity(listI3, 109);
 		enemies.add(Infiltrator3);
+		Infiltrator3.getComponent(0).DecideObjective();
+
+
 
         for(Entity enemy : enemies){
             enemy.getComponent(0).DecideObjective();
@@ -144,107 +228,187 @@ public class MyGdxGame extends ApplicationAdapter {
 		int AubX = Auber.getComponent(1).getLocation().x;
         int AubY = Auber.getComponent(1).getLocation().y;
 
-		if(Auber.getComponent(0).getHealth() < 50) {
-			Auber.getComponent(0).setSprites(auberRunHurt);
-			hurt = true;
-		}
-		else if(Auber.getComponent(0).getHealth()>50){
-			Auber.getComponent(0).setSprites(auberRun);
-			hurt = false;
+        if(teleDelay > 0)
+		{teleDelay -= 1;}
+
+        if(arrestCount >= 8){
+        	gameState = 3;
 		}
 
-		for(Entity e : enemies){
-			if(checkCollide(Auber.getComponent(1).getLocation(), e.getComponent(1).getLocation(), 20) && ((int)(Math.random()*10) > 6) && !(e.getComponent(0).getCaught()))
-			{
-				Auber.getComponent(0).setHealth(Auber.getComponent(0).getHealth() - ((int)(Math.random()*5)));
+        if(gameState == 0 || gameState == 2) {
+			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+				gameState = 1;
 			}
 		}
+        if(gameState == 3)
+		{
+			//win state
 
-		if(Gdx.input.isKeyPressed(Input.Keys.A) && !checkWalls(AubX - 1, AubY) && !checkWalls(AubX - 1, AubY + 5) && !checkWalls(AubX - 1, AubY + 10) && !checkWalls(AubX - 1, AubY + 15) && !checkWalls(AubX - 1, AubY + 20)){
-			Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x) - 1, (Auber.getComponent(1).getLocation().y)));
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.D) && !checkWalls(AubX + 21, AubY) && !checkWalls(AubX + 21, AubY + 5) && !checkWalls(AubX + 21, AubY + 10) && !checkWalls(AubX + 21, AubY + 15) && !checkWalls(AubX + 21, AubY + 20)){
-			Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x) + 1, (Auber.getComponent(1).getLocation().y)));
+        if(gameState == 4)
+		{
+			//lose state
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.W) && !checkWalls(AubX, AubY + 21) && !checkWalls(AubX + 5, AubY + 21) && !checkWalls(AubX + 10, AubY + 21) && !checkWalls(AubX + 15, AubY + 21) && !checkWalls(AubX + 20, AubY + 21)){
-			Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x), (Auber.getComponent(1).getLocation().y) + 1));
-		}
-		if(Gdx.input.isKeyPressed(Input.Keys.S) && !checkWalls(AubX, AubY - 1) && !checkWalls(AubX + 5, AubY - 1) && !checkWalls(AubX + 10, AubY - 1)&& !checkWalls(AubX + 15, AubY - 1)&& !checkWalls(AubX + 20, AubY - 1)){
-			Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x), (Auber.getComponent(1).getLocation().y) - 1));
-		}
+		if(gameState == 1) {
+			if (Auber.getComponent(0).getHealth() <= 50) {
+				Auber.getComponent(0).setSprites(auberRunHurt);
+				hurt = true;
+			} else if (Auber.getComponent(0).getHealth() > 50) {
+				Auber.getComponent(0).setSprites(auberRun);
+				hurt = false;
+			}
 
-		if(Gdx.input.isKeyPressed(Input.Keys.SPACE)){
-			if(checkCollide(Auber.getComponent(1).getLocation(), new Point(921, 510), 30)){
-				Auber.getComponent(1).setLocation(new Point(914, 80));
-			}
-			else if(checkCollide(Auber.getComponent(1).getLocation(), new Point(914, 80), 30)){
-				Auber.getComponent(1).setLocation(new Point(921, 510));
-			}
-			else if(checkCollide(Auber.getComponent(1).getLocation(), new Point(814, 178), 30)){
-				Auber.getComponent(1).setLocation(new Point(96, 296));
-			}
-			else if(checkCollide(Auber.getComponent(1).getLocation(), new Point(96,296), 30)){
-				Auber.getComponent(1).setLocation(new Point(814, 178));
-			}
-			else {
-				Entity ent = new Entity();
-				for (Entity e : enemies) {
-					if (checkCollide(Auber.getComponent(1).getLocation(), e.getComponent(1).getLocation(), 20) && !e.getComponent(0).getCaught()) {
-						ent = e;
+			for (Entity e : enemies) {
+				if (checkCollide(Auber.getComponent(1).getLocation(), e.getComponent(1).getLocation(), 20) && ((int) (Math.random() * 10) > 6) && !(e.getComponent(0).getCaught())) {
+					int preHealth = Auber.getComponent(0).getHealth();
+					Auber.getComponent(0).setHealth(Auber.getComponent(0).getHealth() - ((int) (Math.random() * 5)));
+					if (Auber.getComponent(0).getHealth() <= 50 && preHealth > 50) {
+						damage = 1;
 					}
 				}
-				if (ent.getEntityID() != -1) {
-					ent.getComponent(1).setLocation(new Point(30 + ((int) (Math.random() * 60)), 450 - ((int) (Math.random() * 40))));
-					ent.getComponent(0).setSprites(anims.get(anims.indexOf(ent.getComponent(0).getSprites()) + 1));
-					ent.getComponent(0).setCaught(true);
-					Auber.getComponent(1).setLocation(new Point(30, 500));
+			}
+
+			if (Gdx.input.isKeyPressed(Input.Keys.A) && !checkWalls(AubX - 1, AubY) && !checkWalls(AubX - 1, AubY + 5) && !checkWalls(AubX - 1, AubY + 10) && !checkWalls(AubX - 1, AubY + 15) && !checkWalls(AubX - 1, AubY + 20) && !checkWalls(AubX - 2, AubY) && !checkWalls(AubX - 2, AubY + 5) && !checkWalls(AubX - 2, AubY + 10) && !checkWalls(AubX - 2, AubY + 15) && !checkWalls(AubX - 2, AubY + 20)) {
+				Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x) - charSpeed, (Auber.getComponent(1).getLocation().y)));
+			}
+			if (Gdx.input.isKeyPressed(Input.Keys.D) && !checkWalls(AubX + 21, AubY) && !checkWalls(AubX + 21, AubY + 5) && !checkWalls(AubX + 21, AubY + 10) && !checkWalls(AubX + 21, AubY + 15) && !checkWalls(AubX + 21, AubY + 20) && !checkWalls(AubX + 22, AubY) && !checkWalls(AubX + 22, AubY + 5) && !checkWalls(AubX + 22, AubY + 10) && !checkWalls(AubX + 22, AubY + 15) && !checkWalls(AubX + 22, AubY + 20)) {
+				Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x) + charSpeed, (Auber.getComponent(1).getLocation().y)));
+			}
+			if (Gdx.input.isKeyPressed(Input.Keys.W) && !checkWalls(AubX, AubY + 21) && !checkWalls(AubX + 5, AubY + 21) && !checkWalls(AubX + 10, AubY + 21) && !checkWalls(AubX + 15, AubY + 21) && !checkWalls(AubX + 20, AubY + 21) && !checkWalls(AubX, AubY + 22) && !checkWalls(AubX + 5, AubY + 22) && !checkWalls(AubX + 10, AubY + 22) && !checkWalls(AubX + 15, AubY + 22) && !checkWalls(AubX + 20, AubY + 22)) {
+				Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x), (Auber.getComponent(1).getLocation().y) + charSpeed));
+			}
+			if (Gdx.input.isKeyPressed(Input.Keys.S) && !checkWalls(AubX, AubY - 1) && !checkWalls(AubX + 5, AubY - 1) && !checkWalls(AubX + 10, AubY - 1) && !checkWalls(AubX + 15, AubY - 1) && !checkWalls(AubX + 20, AubY - 1) && !checkWalls(AubX, AubY - 2) && !checkWalls(AubX + 5, AubY - 2) && !checkWalls(AubX + 10, AubY - 2) && !checkWalls(AubX + 15, AubY - 2) && !checkWalls(AubX + 20, AubY - 2)) {
+				Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x), (Auber.getComponent(1).getLocation().y) - charSpeed));
+			}
+
+			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+				if (checkCollide(Auber.getComponent(1).getLocation(), new Point(921, 510), 30) && teleDelay <= 0) {
+					Auber.getComponent(1).setLocation(new Point(914, 80));
+					teleDelay = 300;
+				} else if (checkCollide(Auber.getComponent(1).getLocation(), new Point(914, 80), 30) && teleDelay <= 0) {
+					Auber.getComponent(1).setLocation(new Point(921, 510));
+					teleDelay = 300;
+				} else if (checkCollide(Auber.getComponent(1).getLocation(), new Point(814, 178), 30) && teleDelay <= 0) {
+					Auber.getComponent(1).setLocation(new Point(96, 296));
+					teleDelay = 300;
+				} else if (checkCollide(Auber.getComponent(1).getLocation(), new Point(96, 296), 30) && teleDelay <= 0) {
+					Auber.getComponent(1).setLocation(new Point(814, 178));
+					teleDelay = 300;
+				} else {
+					Entity ent = new Entity();
+					for (Entity e : enemies) {
+						if (checkCollide(Auber.getComponent(1).getLocation(), e.getComponent(1).getLocation(), 20) && !e.getComponent(0).getCaught()) {
+							ent = e;
+						}
+					}
+					if (ent.getEntityID() != -1) {
+						ent.getComponent(1).setLocation(new Point(30 + ((int) (Math.random() * 60)), 450 - ((int) (Math.random() * 40))));
+						ent.getComponent(0).setSprites(anims.get(anims.indexOf(ent.getComponent(0).getSprites()) + 1));
+						ent.getComponent(0).setCaught(true);
+						arrestCount += 1;
+						Auber.getComponent(1).setLocation(new Point(30, 500));
+					}
+				}
+			}
+			if (Gdx.input.isKeyPressed(Input.Keys.E) && teleDelay <= 0) {
+				Auber.getComponent(1).setLocation(new Point(480, (int) (camera.viewportHeight - 120)));
+				Auber.getComponent(0).setHealth(100);
+				teleDelay = 300;
+			}
+			if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
+				gameState = 2;
+			}
+
+			for (Entity enemy : enemies) {
+
+				if (enemy.getComponent(0).getObjective().getName() != -1) {
+					if (checkCollide(enemy.getComponent(1).getLocation(), enemy.getComponent(0).getObjective().getCoords(), 1)) {
+						enemy.getComponent(0).setCurrent(enemy.getComponent(0).getObjective());
+						enemy.getComponent(0).DecideObjective();
+					}
+					enemy.getComponent(0).setTargeting(true);
+				} else {
+					enemy.getComponent(0).DecideObjective();
+				}
+
+				Point target = enemy.getComponent(0).getObjective().getCoords();
+
+				if (!enemy.getComponent(0).getCaught() && enemy.getComponent(0).getTargeting()) {
+
+					if (enemy.getComponent(1).getLocation().x < target.x && !checkWalls(enemy.getComponent(1).getLocation().x + 21, enemy.getComponent(1).getLocation().y + 10)) {
+						enemy.getComponent(1).setX(enemy.getComponent(1).getLocation().x + charSpeed);
+					}
+					if (enemy.getComponent(1).getLocation().x > target.x && !checkWalls(enemy.getComponent(1).getLocation().x - 1, enemy.getComponent(1).getLocation().y + 10)) {
+						enemy.getComponent(1).setX(enemy.getComponent(1).getLocation().x - charSpeed);
+					}
+					if (enemy.getComponent(1).getLocation().y < target.y && !checkWalls(enemy.getComponent(1).getLocation().x + 10, enemy.getComponent(1).getLocation().y + 21)) {
+						enemy.getComponent(1).setY(enemy.getComponent(1).getLocation().y + charSpeed);
+					}
+					if (enemy.getComponent(1).getLocation().y > target.y && !checkWalls(enemy.getComponent(1).getLocation().x + 10, enemy.getComponent(1).getLocation().y - 1)) {
+						enemy.getComponent(1).setY(enemy.getComponent(1).getLocation().y - charSpeed);
+					}
 				}
 			}
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.E)){
-				Auber.getComponent(1).setLocation(new Point(480, (int)(camera.viewportHeight - 120)));
-				Auber.getComponent(0).setHealth(100);
-		}
-
-        for(Entity enemy : enemies){
-
-        	Point target = enemy.getComponent(0).GetObjective();
-
-        	if(!enemy.getComponent(0).getCaught()){
-
-       			if(enemy.getComponent(1).getLocation().x < target.x){
-					enemy.getComponent(1).setX(enemy.getComponent(1).getLocation().x + 2);
-				}
-				if(enemy.getComponent(1).getLocation().x > target.x){
-					enemy.getComponent(1).setX(enemy.getComponent(1).getLocation().x - 2);
-				}
-				if(enemy.getComponent(1).getLocation().y < target.y){
-					enemy.getComponent(1).setY(enemy.getComponent(1).getLocation().y + 2);
-				}
-				if(enemy.getComponent(1).getLocation().y > target.y){
-					enemy.getComponent(1).setY(enemy.getComponent(1).getLocation().y - 2);
-				}
-        	}
-        }
 
 		camera.update();
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 		gameMap.draw(batch);
-		font.draw(batch, Integer.toString(Auber.getComponent(0).getHealth()), 1, 479);
 
-        batch.draw(Auber.getComponent(0).getSprites().getKeyFrame(stateTime), Auber.getComponent(1).getLocation().x, Auber.getComponent(1).getLocation().y);
-		batch.draw(InfiltratorBase1.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase1.getComponent(1).getLocation().x, InfiltratorBase1.getComponent(1).getLocation().y);
-        batch.draw(InfiltratorBase2.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase2.getComponent(1).getLocation().x, InfiltratorBase2.getComponent(1).getLocation().y);
-        batch.draw(InfiltratorBase3.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase3.getComponent(1).getLocation().x, InfiltratorBase3.getComponent(1).getLocation().y);
-        batch.draw(InfiltratorBase4.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase4.getComponent(1).getLocation().x, InfiltratorBase4.getComponent(1).getLocation().y);
-        batch.draw(InfiltratorBase5.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase5.getComponent(1).getLocation().x, InfiltratorBase5.getComponent(1).getLocation().y);
-        batch.draw(Infiltrator1.getComponent(0).getSprites().getKeyFrame(stateTime), Infiltrator1.getComponent(1).getLocation().x, Infiltrator1.getComponent(1).getLocation().y);
-        batch.draw(Infiltrator2.getComponent(0).getSprites().getKeyFrame(stateTime), Infiltrator2.getComponent(1).getLocation().x, Infiltrator2.getComponent(1).getLocation().y);
-        batch.draw(Infiltrator3.getComponent(0).getSprites().getKeyFrame(stateTime), Infiltrator3.getComponent(1).getLocation().x, Infiltrator3.getComponent(1).getLocation().y);
+		if(gameState == 3)
+		{
+			win.draw(batch);
+		}
+		else if(gameState == 4)
+		{
+			lose.draw(batch);
+		}
+		else {
+			font.draw(batch, Integer.toString(Auber.getComponent(0).getHealth()), 1, 479);
 
-        if(hurt){
-        	batch.draw(hurtMap,0, 0, 641, 480);
+			batch.draw(Auber.getComponent(0).getSprites().getKeyFrame(stateTime), Auber.getComponent(1).getLocation().x, Auber.getComponent(1).getLocation().y);
+			batch.draw(InfiltratorBase1.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase1.getComponent(1).getLocation().x, InfiltratorBase1.getComponent(1).getLocation().y);
+			batch.draw(InfiltratorBase2.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase2.getComponent(1).getLocation().x, InfiltratorBase2.getComponent(1).getLocation().y);
+			batch.draw(InfiltratorBase3.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase3.getComponent(1).getLocation().x, InfiltratorBase3.getComponent(1).getLocation().y);
+			batch.draw(InfiltratorBase4.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase4.getComponent(1).getLocation().x, InfiltratorBase4.getComponent(1).getLocation().y);
+			batch.draw(InfiltratorBase5.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase5.getComponent(1).getLocation().x, InfiltratorBase5.getComponent(1).getLocation().y);
+			batch.draw(Infiltrator1.getComponent(0).getSprites().getKeyFrame(stateTime), Infiltrator1.getComponent(1).getLocation().x, Infiltrator1.getComponent(1).getLocation().y);
+			batch.draw(Infiltrator2.getComponent(0).getSprites().getKeyFrame(stateTime), Infiltrator2.getComponent(1).getLocation().x, Infiltrator2.getComponent(1).getLocation().y);
+			batch.draw(Infiltrator3.getComponent(0).getSprites().getKeyFrame(stateTime), Infiltrator3.getComponent(1).getLocation().x, Infiltrator3.getComponent(1).getLocation().y);
+
+			if (gameState == 0 || gameState == 2) {
+				infoScreen.draw(batch);
+				if (gameState == 2) {
+					paused.draw(batch);
+				}
+			}
+
+			if (hurt) {
+				hurtMap.draw(batch);
+			}
+			switch (damage) {
+				case (1):
+					gameMap.translateX(5);
+					damage = 2;
+					break;
+				case (2):
+					damage = 3;
+					break;
+				case (3):
+					gameMap.translateX(-10);
+					damage = 4;
+					break;
+				case (4):
+					damage = 5;
+					break;
+				case (5):
+					gameMap.translateX(5);
+					damage = 0;
+					break;
+				default:
+					break;
+			}
 		}
 		batch.end();
 	}
@@ -326,13 +490,16 @@ public class MyGdxGame extends ApplicationAdapter {
 		public abstract void setLocation(Point p);
 		public abstract void setSprites(Animation<TextureRegion> anim);
         public abstract void DecideObjective();
-        public abstract Point GetObjective();
+        public abstract Node getObjective();
         public abstract boolean getCaught();
         public abstract void setCaught(boolean arrest);
         public abstract void setX(int x);
         public abstract void setY(int y);
         public abstract int getHealth();
         public abstract void setHealth(int healthIn);
+        public abstract void setCurrent(Node n);
+        public abstract void setTargeting(boolean targeting);
+        public abstract boolean getTargeting();
 
 	}
 
@@ -353,14 +520,17 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	public class Enemy extends Character{
 		int enemyId;
-        Point Target;
+        Node Target;
         boolean isCaught;
+        Node current;
+        boolean isTargeting;
 
 		public Enemy(){
 		}
-		public Enemy(int i, Animation<TextureRegion> spriteSet, int j){
+		public Enemy(int i, Animation<TextureRegion> spriteSet, int j, Node current){
 			super(i, spriteSet);
 			this.enemyId = j;
+			this.current = current;
 		}
 
 		public Animation<TextureRegion> getSprites() {
@@ -377,19 +547,31 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		public boolean getCaught(){return isCaught;}
 		public void setCaught(boolean arrest){this.isCaught = arrest;}
+		public void setCurrent(Node n){
+			this.current = n;
+		}
         public void DecideObjective() {
-            int randX = 10 + (int)(Math.random()*1100);
-            int randY = 20 + (int)(Math.random()*500);
-            this.Target  = new Point(randX,randY);
+			ArrayList<Node> nodeChoice = new ArrayList<Node>();
+            for(int n : current.neighbours){
+            	for (Node node : nodeList){
+            		if (node.getName() == n){
+						nodeChoice.add(node);
+					}
+				}
+			}
+            this.Target  = nodeChoice.get((int)(Math.random()*nodeChoice.size()));
         }
-        public Point GetObjective() {
+        public Node getObjective() {
 		    if(this.isCaught) {
-                return null;
+                return new Node();
             }
 		    else {
+	//	    	this.DecideObjective();
                 return this.Target;
             }
         }
+        public void setTargeting(boolean targeting){this.isTargeting = targeting;}
+        public boolean getTargeting(){return isTargeting;}
 	}
 
 	public class Player extends Character{
@@ -409,9 +591,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		public int getHealth(){return health;}
 		public void setHealth(int healthIn){this.health = healthIn;}
 		public void DecideObjective() {};
-		public Point GetObjective() { return null;}
+		public Node getObjective() { return null;}
 		public  boolean getCaught(){return false;}
 		public void setCaught(boolean arrest){}
+		public void setCurrent(Node n){}
+		public void setTargeting(boolean targeting){}
+		public boolean getTargeting(){return false;}
 
 	}
 
@@ -436,10 +621,130 @@ public class MyGdxGame extends ApplicationAdapter {
 		public Animation<TextureRegion> getSprites(){return null;}
 		public void setSprites(Animation<TextureRegion> anim){}
         public void DecideObjective() {};
-        public Point GetObjective() { return null;}
+        public Node getObjective() { return null;}
         public  boolean getCaught(){return false;}
         public void setCaught(boolean arrest){}
         public int getHealth(){return -1;}
         public void setHealth(int healthIn){}
+        public void setCurrent(Node n){}
+		public void setTargeting(boolean targeting){}
+		public boolean getTargeting(){return false;}
+	}
+
+
+
+	public class Node{
+	    int name;
+	    Point coords;
+	    int status;
+	    ArrayList<Integer> neighbours;
+
+	    public Node(){this.name = -1;}
+	    public Node(int name, Point coords, int status, ArrayList neighbours){
+	        this.name = name;
+	        this.coords = coords;
+	        this.status = status;
+	        this.neighbours = neighbours;
+        }
+
+        public int getName(){return name;}
+        public void setName(int name1){this.name = name1;}
+        public Point getCoords(){return coords;}
+        public void setCoords(Point coords1){this.coords = coords1;}
+        public int getStatus(){return status;}
+        public void setStatus(int status1){this.status = status1;}
+        public ArrayList<Integer> getNeighbours(){return neighbours;}
+        public void setNeighbours(ArrayList<Integer> neighbours1){this.neighbours = neighbours1;}
+    }
+
+    public void makeNodes(){
+		n1 = new Node(1, new Point(250, 510), 1, new ArrayList<Integer>(Arrays.asList(2, 3)));
+		n2 = new Node(2, new Point(250, 450), 2, new ArrayList<Integer>(Arrays.asList(1)));
+		n3 = new Node(3, new Point(325, 500), 1, new ArrayList<Integer>(Arrays.asList(1,4)));
+		n4 = new Node(4, new Point(325, 370), 1, new ArrayList<Integer>(Arrays.asList(3, 5, 12)));
+		n5 = new Node(5, new Point(170, 370), 2, new ArrayList<Integer>(Arrays.asList(4, 6)));
+		n6 = new Node(6, new Point(50, 370), 1, new ArrayList<Integer>(Arrays.asList(5, 7)));
+		n7 = new Node(7, new Point(50, 250), 1, new ArrayList<Integer>(Arrays.asList(6, 8, 10)));
+		n8 = new Node(8, new Point(50, 30), 2, new ArrayList<Integer>(Arrays.asList(7, 9, 10)));
+		n9 = new Node(9, new Point(250, 30), 1, new ArrayList<Integer>(Arrays.asList(7, 8, 10, 11)));
+		n10 = new Node(10, new Point(250, 300), 2, new ArrayList<Integer>(Arrays.asList(7, 8, 9)));
+		n11 = new Node(11, new Point(310, 30), 1, new ArrayList<Integer>(Arrays.asList(9, 12, 13)));
+		n12 = new Node(12, new Point(340, 200), 1, new ArrayList<Integer>(Arrays.asList(4, 14, 11, 13)));
+		n13 = new Node(13, new Point(350, 30), 2, new ArrayList<Integer>(Arrays.asList(11, 12)));
+		n14 = new Node(14, new Point(420, 300), 1, new ArrayList<Integer>(Arrays.asList(12, 15, 22, 36)));
+		n15 = new Node(15, new Point(420, 370), 1, new ArrayList<Integer>(Arrays.asList(14, 16, 17, 18)));
+		n16 = new Node(16, new Point(420, 500), 2, new ArrayList<Integer>(Arrays.asList(15, 17, 18)));
+		n17 = new Node(17, new Point(550, 480), 1, new ArrayList<Integer>(Arrays.asList(15, 16, 18, 19)));
+		n18 = new Node(18, new Point(580, 375), 2, new ArrayList<Integer>(Arrays.asList(15, 16, 17)));
+		n19 = new Node(19, new Point(750, 520), 1, new ArrayList<Integer>(Arrays.asList(17, 20, 21)));
+		n20 = new Node(20, new Point(870, 500), 2, new ArrayList<Integer>(Arrays.asList(19, 21)));
+		n21 = new Node(21, new Point(860, 350), 1, new ArrayList<Integer>(Arrays.asList(19, 20, 24)));
+		n22 = new Node(22, new Point(660, 300), 1, new ArrayList<Integer>(Arrays.asList(14, 23, 24)));
+		n23 = new Node(23, new Point(660, 420), 2, new ArrayList<Integer>(Arrays.asList(22)));
+		n24 = new Node(24, new Point(860, 300), 1, new ArrayList<Integer>(Arrays.asList(21, 22, 25)));
+		n25 = new Node(25, new Point(1080, 300), 1, new ArrayList<Integer>(Arrays.asList(24, 26, 29)));
+		n26 = new Node(26, new Point(1080, 380), 1, new ArrayList<Integer>(Arrays.asList(25, 27, 28)));
+		n27 = new Node(27, new Point(950, 370), 2, new ArrayList<Integer>(Arrays.asList(26, 28)));
+		n28 = new Node(28, new Point(1080, 510), 2, new ArrayList<Integer>(Arrays.asList(26, 27)));
+		n29 = new Node(29, new Point(1090, 110), 1, new ArrayList<Integer>(Arrays.asList(25, 30, 32)));
+		n30 = new Node(30, new Point(1090, 70), 1, new ArrayList<Integer>(Arrays.asList(29, 31)));
+		n31 = new Node(31, new Point(950, 30), 2, new ArrayList<Integer>(Arrays.asList(30)));
+		n32 = new Node(32, new Point(900, 140), 1, new ArrayList<Integer>(Arrays.asList(29, 33)));
+		n33 = new Node(33, new Point(870, 110), 1, new ArrayList<Integer>(Arrays.asList(32, 34, 42)));
+		n34 = new Node(34, new Point(870, 30), 1, new ArrayList<Integer>(Arrays.asList(33, 35)));
+		n35 = new Node(35, new Point(430, 30), 1, new ArrayList<Integer>(Arrays.asList(34, 36)));
+		n36 = new Node(36, new Point(430, 170), 1, new ArrayList<Integer>(Arrays.asList(14, 35, 37)));
+		n37 = new Node(37, new Point(500, 170), 1, new ArrayList<Integer>(Arrays.asList(36, 38, 42, 43, 44)));
+		n38 = new Node(38, new Point(710, 250), 1, new ArrayList<Integer>(Arrays.asList(37, 39)));
+		n39 = new Node(39, new Point(820, 220), 1, new ArrayList<Integer>(Arrays.asList(38, 40, 42)));
+		n40 = new Node(40, new Point(870, 220), 1, new ArrayList<Integer>(Arrays.asList(39, 41)));
+		n41 = new Node(41, new Point(1000, 180), 2, new ArrayList<Integer>(Arrays.asList(40)));
+		n42 = new Node(42, new Point(820, 100), 1, new ArrayList<Integer>(Arrays.asList(33, 37, 39, 43, 44)));
+		n43 = new Node(43, new Point(710, 170), 2, new ArrayList<Integer>(Arrays.asList(37, 42, 44)));
+		n44 = new Node(44, new Point(510, 90), 2, new ArrayList<Integer>(Arrays.asList(37, 42, 43)));
+		nodeList.add(n1);
+		nodeList.add(n2);
+		nodeList.add(n3);
+		nodeList.add(n4);
+		nodeList.add(n5);
+		nodeList.add(n6);
+		nodeList.add(n7);
+		nodeList.add(n8);
+		nodeList.add(n9);
+		nodeList.add(n10);
+		nodeList.add(n11);
+		nodeList.add(n12);
+		nodeList.add(n13);
+		nodeList.add(n14);
+		nodeList.add(n15);
+		nodeList.add(n16);
+		nodeList.add(n17);
+		nodeList.add(n18);
+		nodeList.add(n19);
+		nodeList.add(n20);
+		nodeList.add(n21);
+		nodeList.add(n22);
+		nodeList.add(n23);
+		nodeList.add(n24);
+		nodeList.add(n25);
+		nodeList.add(n26);
+		nodeList.add(n27);
+		nodeList.add(n28);
+		nodeList.add(n29);
+		nodeList.add(n30);
+		nodeList.add(n31);
+		nodeList.add(n32);
+		nodeList.add(n33);
+		nodeList.add(n34);
+		nodeList.add(n35);
+		nodeList.add(n36);
+		nodeList.add(n37);
+		nodeList.add(n38);
+		nodeList.add(n39);
+		nodeList.add(n40);
+		nodeList.add(n41);
+		nodeList.add(n42);
+		nodeList.add(n43);
+		nodeList.add(n44);
 	}
 }
