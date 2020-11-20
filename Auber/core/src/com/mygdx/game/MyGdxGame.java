@@ -23,6 +23,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	Sprite paused;
 	Sprite win;
 	Sprite lose;
+	Sprite confused;
+	Sprite attack;
+	Sprite down;
 	TextureAtlas textureAtlas;
 	boolean hurt = false;
 	int damage = 0;
@@ -32,6 +35,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	int teleDelay = 0;
 	int gameState = 0;
 	int arrestCount = 0;
+	int isConfused = 0;
+	int enemyInvis = 0;
+	int exitDelay = 0;
+	int systemsDown = 0;
 
 	OrthographicCamera camera;
 	Viewport viewport;
@@ -109,6 +116,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	Node n42;
 	Node n43;
 	Node n44;
+	Node n45;
 
 
 	//@Override
@@ -132,6 +140,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		lose = new Sprite(new Texture("GameLose.png"));
 		lose.setPosition(0,0);
 		lose.setSize(1131,548);
+        confused = new Sprite(new Texture("GameMapConfused.png"));
+        confused.setPosition(0,0);
+        confused.setSize(1131,548);
+        attack = new Sprite(new Texture("SystemAttack.png"));
+        attack.setSize(30, 30);
+        down = new Sprite(new Texture("SystemDown.png"));
+        down.setSize(30, 30);
 		textureAtlas = new TextureAtlas("spriteSheet1.txt");
 		font = new BitmapFont();
 		pixels = new Pixmap(Gdx.files.internal("GameMap1.jpg"));
@@ -180,35 +195,35 @@ public class MyGdxGame extends ApplicationAdapter {
         Component[] listA = new Component[]{new Player(101, auberRun), new Location(201, new Point(30, 500))};
         Auber = new Entity(listA, 101);
 
-		Component[] listB1 = new Component[]{new Enemy(102, infilBase1Run, 102, n25), new Location(202, n25.getCoords())};
+		Component[] listB1 = new Component[]{new Enemy(102, infilBase1Run, 102, new Node (n25)), new Location(202, n25.getCoords())};
 		InfiltratorBase1 = new Entity(listB1, 102);
 		enemies.add(InfiltratorBase1);
 		InfiltratorBase1.getComponent(0).DecideObjective();
-        Component[] listB2 = new Component[]{new Enemy(103, infilBase1Run, 103, n29), new Location(203, n29.getCoords())};
+        Component[] listB2 = new Component[]{new Enemy(103, infilBase1Run, 103, new Node (n29)), new Location(203, n29.getCoords())};
         InfiltratorBase2 = new Entity(listB2, 103);
 		enemies.add(InfiltratorBase2);
 		InfiltratorBase2.getComponent(0).DecideObjective();
-        Component[] listB3 = new Component[]{new Enemy(104, infilBase1Run, 104, n32), new Location(204, n32.getCoords())};
+        Component[] listB3 = new Component[]{new Enemy(104, infilBase1Run, 104, new Node (n32)), new Location(204, n32.getCoords())};
         InfiltratorBase3 = new Entity(listB3, 104);
 		enemies.add(InfiltratorBase3);
 		InfiltratorBase3.getComponent(0).DecideObjective();
-		Component[] listB4 = new Component[]{new Enemy(105, infilBase1Run, 105, n33), new Location(205, n33.getCoords())};
+		Component[] listB4 = new Component[]{new Enemy(105, infilBase1Run, 105, new Node (n33)), new Location(205, n33.getCoords())};
         InfiltratorBase4 = new Entity(listB4, 105);
 		enemies.add(InfiltratorBase4);
 		InfiltratorBase4.getComponent(0).DecideObjective();
-        Component[] listB5 = new Component[]{new Enemy(106, infilBase1Run, 106, n30), new Location(206, n30.getCoords())};
+        Component[] listB5 = new Component[]{new Enemy(106, infilBase1Run, 106, new Node(n30)), new Location(206, n30.getCoords())};
         InfiltratorBase5 = new Entity(listB5, 106);
 		enemies.add(InfiltratorBase5);
 		InfiltratorBase5.getComponent(0).DecideObjective();
-        Component[] listI1 = new Component[]{new Enemy(107, infil1Run, 107, n24), new Location(207, n24.getCoords())};
+        Component[] listI1 = new Component[]{new Enemy(107, infil1Run, 107, new Node(n24)), new Location(207, n24.getCoords())};
         Infiltrator1 = new Entity(listI1, 107);
 		enemies.add(Infiltrator1);
 		Infiltrator1.getComponent(0).DecideObjective();
-        Component[] listI2 = new Component[]{new Enemy(108, infil2Run, 108, n35), new Location(208, n35.getCoords())};
+        Component[] listI2 = new Component[]{new Enemy(108, infil2Run, 108, new Node(n35)), new Location(208, n35.getCoords())};
         Infiltrator2 = new Entity(listI2, 108);
 		enemies.add(Infiltrator2);
 		Infiltrator2.getComponent(0).DecideObjective();
-        Component[] listI3 = new Component[]{new Enemy(109, infil3Run, 109, n34), new Location(209, n34.getCoords())};
+        Component[] listI3 = new Component[]{new Enemy(109, infil3Run, 109, new Node(n34)), new Location(209, n34.getCoords())};
         Infiltrator3 = new Entity(listI3, 109);
 		enemies.add(Infiltrator3);
 		Infiltrator3.getComponent(0).DecideObjective();
@@ -230,24 +245,52 @@ public class MyGdxGame extends ApplicationAdapter {
 
         if(teleDelay > 0)
 		{teleDelay -= 1;}
+        if(exitDelay > 0)
+        {exitDelay -= 1;}
+        if(isConfused > 0)
+        {isConfused -= 1;}
+        if(enemyInvis > 0)
+        {enemyInvis -= 1;}
+        for(Entity enemy: enemies)
+        {
+            if(enemy.getComponent(0).getDelay() > 0)
+            {
+                enemy.getComponent(0).setDelay(enemy.getComponent(0).getDelay() - 1);
+            }
+            if(enemy.getComponent(0).getHacking() > 0)
+			{
+				enemy.getComponent(0).setHacking(enemy.getComponent(0).getHacking() - 1);
+			}
+        }
 
         if(arrestCount >= 8){
         	gameState = 3;
 		}
+        else if(Auber.getComponent(0).getHealth() <= 0 || systemsDown >= 15) {
+            gameState = 4;
+        }
 
         if(gameState == 0 || gameState == 2) {
 			if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
 				gameState = 1;
 			}
+			else if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE) && exitDelay <= 0){
+			    System.exit(0);
+            }
 		}
         if(gameState == 3)
 		{
 			//win state
-
+            if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
+                System.exit(0);
+            }
 		}
         if(gameState == 4)
 		{
 			//lose state
+            if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
+                System.exit(0);
+            }
 		}
 		if(gameState == 1) {
 			if (Auber.getComponent(0).getHealth() <= 50) {
@@ -258,6 +301,11 @@ public class MyGdxGame extends ApplicationAdapter {
 				hurt = false;
 			}
 
+			if(checkCollide(Auber.getComponent(1).getLocation(), Infiltrator1.getComponent(1).getLocation(), 60) && teleDelay <= 0 && !Infiltrator1.getComponent(0).getCaught())
+			{
+				teleDelay = 600;
+			}
+
 			for (Entity e : enemies) {
 				if (checkCollide(Auber.getComponent(1).getLocation(), e.getComponent(1).getLocation(), 20) && ((int) (Math.random() * 10) > 6) && !(e.getComponent(0).getCaught())) {
 					int preHealth = Auber.getComponent(0).getHealth();
@@ -265,8 +313,17 @@ public class MyGdxGame extends ApplicationAdapter {
 					if (Auber.getComponent(0).getHealth() <= 50 && preHealth > 50) {
 						damage = 1;
 					}
+					if(e == Infiltrator3)
+                    {
+                        isConfused = 300;
+                    }
 				}
 			}
+
+			if(checkCollide(Auber.getComponent(1).getLocation(), Infiltrator2.getComponent(1).getLocation(), 50) && !Infiltrator2.getComponent(0).getCaught() && enemyInvis <= 0){
+			    enemyInvis = 420;
+            }
+
 
 			if (Gdx.input.isKeyPressed(Input.Keys.A) && !checkWalls(AubX - 1, AubY) && !checkWalls(AubX - 1, AubY + 5) && !checkWalls(AubX - 1, AubY + 10) && !checkWalls(AubX - 1, AubY + 15) && !checkWalls(AubX - 1, AubY + 20) && !checkWalls(AubX - 2, AubY) && !checkWalls(AubX - 2, AubY + 5) && !checkWalls(AubX - 2, AubY + 10) && !checkWalls(AubX - 2, AubY + 15) && !checkWalls(AubX - 2, AubY + 20)) {
 				Auber.getComponent(1).setLocation(new Point((Auber.getComponent(1).getLocation().x) - charSpeed, (Auber.getComponent(1).getLocation().y)));
@@ -317,35 +374,62 @@ public class MyGdxGame extends ApplicationAdapter {
 			}
 			if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
 				gameState = 2;
+                exitDelay = 30;
 			}
 
 			for (Entity enemy : enemies) {
 
-				if (enemy.getComponent(0).getObjective().getName() != -1) {
-					if (checkCollide(enemy.getComponent(1).getLocation(), enemy.getComponent(0).getObjective().getCoords(), 1)) {
-						enemy.getComponent(0).setCurrent(enemy.getComponent(0).getObjective());
-						enemy.getComponent(0).DecideObjective();
+				Node n = enemy.getComponent(0).getCurrent();
+				Node n1 = enemy.getComponent(0).getObjective();
+
+				if(enemy.getComponent(0).getHacking() == 1)
+				{
+					enemy.getComponent(0).getCurrent().setStatus(4);
+					enemy.getComponent(0).DecideObjective();
+					systemsDown += 1;
+
+				}
+
+				if (n1.getName() != -1 && enemy.getComponent(0).getDelay() <= 0 && n != n1 && enemy.getComponent(0).getHacking() <= 0) {
+					if (checkCollide(enemy.getComponent(1).getLocation(), n1.getCoords(), 6)) {
+						if (n1.getStatus() == 2)
+						{
+							n1.setStatus(3);
+							enemy.getComponent(0).setHacking(1500);
+							enemy.getComponent(0).setCurrent(n1);
+						}
+						else
+						{
+							enemy.getComponent(0).setCurrent(n1);
+							enemy.getComponent(0).DecideObjective();
+							n1 = enemy.getComponent(0).getObjective();
+							enemy.getComponent(0).setDelay(5);
+						}
 					}
 					enemy.getComponent(0).setTargeting(true);
 				} else {
 					enemy.getComponent(0).DecideObjective();
+					n1 = enemy.getComponent(0).getObjective();
 				}
 
-				Point target = enemy.getComponent(0).getObjective().getCoords();
+				Point target = n1.getCoords();
 
-				if (!enemy.getComponent(0).getCaught() && enemy.getComponent(0).getTargeting()) {
+				if (!enemy.getComponent(0).getCaught() && enemy.getComponent(0).getTargeting() && enemy.getComponent(0).getDelay() <=0 && enemy.getComponent(0).getHacking() <= 0) {
 
-					if (enemy.getComponent(1).getLocation().x < target.x && !checkWalls(enemy.getComponent(1).getLocation().x + 21, enemy.getComponent(1).getLocation().y + 10)) {
-						enemy.getComponent(1).setX(enemy.getComponent(1).getLocation().x + charSpeed);
+					int enX = enemy.getComponent(1).getLocation().x;
+					int enY = enemy.getComponent(1).getLocation().y;
+
+					if (enemy.getComponent(1).getLocation().x < target.x&& !checkWalls(enemy.getComponent(1).getLocation().x + 21, enemy.getComponent(1).getLocation().y)&& !checkWalls(enemy.getComponent(1).getLocation().x + 21, enemy.getComponent(1).getLocation().y + 5)&& !checkWalls(enemy.getComponent(1).getLocation().x + 21, enemy.getComponent(1).getLocation().y + 10)&& !checkWalls(enemy.getComponent(1).getLocation().x + 21, enemy.getComponent(1).getLocation().y + 15)&& !checkWalls(enemy.getComponent(1).getLocation().x + 21, enemy.getComponent(1).getLocation().y + 20)&& !checkWalls(enemy.getComponent(1).getLocation().x + 22, enemy.getComponent(1).getLocation().y)&& !checkWalls(enemy.getComponent(1).getLocation().x + 22, enemy.getComponent(1).getLocation().y + 5)&& !checkWalls(enemy.getComponent(1).getLocation().x + 22, enemy.getComponent(1).getLocation().y + 10)&& !checkWalls(enemy.getComponent(1).getLocation().x + 22, enemy.getComponent(1).getLocation().y + 15)&& !checkWalls(enemy.getComponent(1).getLocation().x + 22, enemy.getComponent(1).getLocation().y + 20)) {
+						enemy.getComponent(1).setLocation(new Point(enX + charSpeed, enY));
 					}
-					if (enemy.getComponent(1).getLocation().x > target.x && !checkWalls(enemy.getComponent(1).getLocation().x - 1, enemy.getComponent(1).getLocation().y + 10)) {
-						enemy.getComponent(1).setX(enemy.getComponent(1).getLocation().x - charSpeed);
+					if (enemy.getComponent(1).getLocation().x > target.x&& !checkWalls(enemy.getComponent(1).getLocation().x - 1, enemy.getComponent(1).getLocation().y)&& !checkWalls(enemy.getComponent(1).getLocation().x - 1, enemy.getComponent(1).getLocation().y + 5)&& !checkWalls(enemy.getComponent(1).getLocation().x - 1, enemy.getComponent(1).getLocation().y + 10)&& !checkWalls(enemy.getComponent(1).getLocation().x - 1, enemy.getComponent(1).getLocation().y + 15)&& !checkWalls(enemy.getComponent(1).getLocation().x - 1, enemy.getComponent(1).getLocation().y + 20)&& !checkWalls(enemy.getComponent(1).getLocation().x - 2, enemy.getComponent(1).getLocation().y)&& !checkWalls(enemy.getComponent(1).getLocation().x - 2, enemy.getComponent(1).getLocation().y + 5)&& !checkWalls(enemy.getComponent(1).getLocation().x - 2, enemy.getComponent(1).getLocation().y + 10)&& !checkWalls(enemy.getComponent(1).getLocation().x - 2, enemy.getComponent(1).getLocation().y + 15)&& !checkWalls(enemy.getComponent(1).getLocation().x - 2, enemy.getComponent(1).getLocation().y + 20)) {
+						enemy.getComponent(1).setLocation(new Point(enX - charSpeed, enY));
 					}
-					if (enemy.getComponent(1).getLocation().y < target.y && !checkWalls(enemy.getComponent(1).getLocation().x + 10, enemy.getComponent(1).getLocation().y + 21)) {
-						enemy.getComponent(1).setY(enemy.getComponent(1).getLocation().y + charSpeed);
+					if (enemy.getComponent(1).getLocation().y < target.y&& !checkWalls(enemy.getComponent(1).getLocation().x, enemy.getComponent(1).getLocation().y + 21) && !checkWalls(enemy.getComponent(1).getLocation().x + 5, enemy.getComponent(1).getLocation().y + 21) && !checkWalls(enemy.getComponent(1).getLocation().x + 10, enemy.getComponent(1).getLocation().y + 21) && !checkWalls(enemy.getComponent(1).getLocation().x + 15, enemy.getComponent(1).getLocation().y + 21) && !checkWalls(enemy.getComponent(1).getLocation().x + 20, enemy.getComponent(1).getLocation().y + 22) && !checkWalls(enemy.getComponent(1).getLocation().x, enemy.getComponent(1).getLocation().y + 22) && !checkWalls(enemy.getComponent(1).getLocation().x + 5, enemy.getComponent(1).getLocation().y + 22) && !checkWalls(enemy.getComponent(1).getLocation().x + 10, enemy.getComponent(1).getLocation().y + 22) && !checkWalls(enemy.getComponent(1).getLocation().x + 15, enemy.getComponent(1).getLocation().y + 22) && !checkWalls(enemy.getComponent(1).getLocation().x + 20, enemy.getComponent(1).getLocation().y + 22)) {
+						enemy.getComponent(1).setLocation(new Point(enX, enY + charSpeed));
 					}
-					if (enemy.getComponent(1).getLocation().y > target.y && !checkWalls(enemy.getComponent(1).getLocation().x + 10, enemy.getComponent(1).getLocation().y - 1)) {
-						enemy.getComponent(1).setY(enemy.getComponent(1).getLocation().y - charSpeed);
+					if (enemy.getComponent(1).getLocation().y > target.y&& !checkWalls(enemy.getComponent(1).getLocation().x, enemy.getComponent(1).getLocation().y - 1) && !checkWalls(enemy.getComponent(1).getLocation().x + 5, enemy.getComponent(1).getLocation().y - 1) && !checkWalls(enemy.getComponent(1).getLocation().x + 10, enemy.getComponent(1).getLocation().y - 1) && !checkWalls(enemy.getComponent(1).getLocation().x + 15, enemy.getComponent(1).getLocation().y - 1) && !checkWalls(enemy.getComponent(1).getLocation().x + 20, enemy.getComponent(1).getLocation().y - 1) && !checkWalls(enemy.getComponent(1).getLocation().x, enemy.getComponent(1).getLocation().y - 2) && !checkWalls(enemy.getComponent(1).getLocation().x + 5, enemy.getComponent(1).getLocation().y - 2) && !checkWalls(enemy.getComponent(1).getLocation().x + 10, enemy.getComponent(1).getLocation().y - 2) && !checkWalls(enemy.getComponent(1).getLocation().x + 15, enemy.getComponent(1).getLocation().y - 2) && !checkWalls(enemy.getComponent(1).getLocation().x + 20, enemy.getComponent(1).getLocation().y - 2)) {
+						enemy.getComponent(1).setLocation(new Point(enX, enY - charSpeed));
 					}
 				}
 			}
@@ -365,7 +449,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			lose.draw(batch);
 		}
 		else {
-			font.draw(batch, Integer.toString(Auber.getComponent(0).getHealth()), 1, 479);
+			font.draw(batch, Integer.toString(Auber.getComponent(0).getHealth()), 1, 547);
 
 			batch.draw(Auber.getComponent(0).getSprites().getKeyFrame(stateTime), Auber.getComponent(1).getLocation().x, Auber.getComponent(1).getLocation().y);
 			batch.draw(InfiltratorBase1.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase1.getComponent(1).getLocation().x, InfiltratorBase1.getComponent(1).getLocation().y);
@@ -374,13 +458,24 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(InfiltratorBase4.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase4.getComponent(1).getLocation().x, InfiltratorBase4.getComponent(1).getLocation().y);
 			batch.draw(InfiltratorBase5.getComponent(0).getSprites().getKeyFrame(stateTime), InfiltratorBase5.getComponent(1).getLocation().x, InfiltratorBase5.getComponent(1).getLocation().y);
 			batch.draw(Infiltrator1.getComponent(0).getSprites().getKeyFrame(stateTime), Infiltrator1.getComponent(1).getLocation().x, Infiltrator1.getComponent(1).getLocation().y);
-			batch.draw(Infiltrator2.getComponent(0).getSprites().getKeyFrame(stateTime), Infiltrator2.getComponent(1).getLocation().x, Infiltrator2.getComponent(1).getLocation().y);
+			if(enemyInvis <= 0) {
+                batch.draw(Infiltrator2.getComponent(0).getSprites().getKeyFrame(stateTime), Infiltrator2.getComponent(1).getLocation().x, Infiltrator2.getComponent(1).getLocation().y);
+            }
 			batch.draw(Infiltrator3.getComponent(0).getSprites().getKeyFrame(stateTime), Infiltrator3.getComponent(1).getLocation().x, Infiltrator3.getComponent(1).getLocation().y);
 
-			if (gameState == 0 || gameState == 2) {
-				infoScreen.draw(batch);
-				if (gameState == 2) {
-					paused.draw(batch);
+			for(Node n : nodeList)
+			{
+				if(n.getStatus() == 3)
+				{
+					Sprite attack1 = new Sprite(attack);
+					attack1.setPosition(n.getCoords().x, n.getCoords().y);
+					attack1.draw(batch);
+				}
+				if(n.getStatus() == 4)
+				{
+					Sprite down1 = new Sprite(down);
+					down1.setPosition(n.getCoords().x, n.getCoords().y);
+					down1.draw(batch);
 				}
 			}
 
@@ -409,7 +504,19 @@ public class MyGdxGame extends ApplicationAdapter {
 				default:
 					break;
 			}
+			if(isConfused > 0)
+            {
+                confused.draw(batch);
+            }
 		}
+
+		if (gameState == 0 || gameState == 2) {
+			infoScreen.draw(batch);
+			if (gameState == 2) {
+				paused.draw(batch);
+			}
+		}
+
 		batch.end();
 	}
 
@@ -500,6 +607,12 @@ public class MyGdxGame extends ApplicationAdapter {
         public abstract void setCurrent(Node n);
         public abstract void setTargeting(boolean targeting);
         public abstract boolean getTargeting();
+        public abstract void setDelay(int delay);
+        public abstract int getDelay();
+        public abstract Node getCurrent();
+        public abstract int getHacking();
+        public abstract void setHacking(int toHack);
+        public abstract void setTarget(Node n);
 
 	}
 
@@ -524,6 +637,8 @@ public class MyGdxGame extends ApplicationAdapter {
         boolean isCaught;
         Node current;
         boolean isTargeting;
+        int moveDelay = 0;
+        int isHacking;
 
 		public Enemy(){
 		}
@@ -531,6 +646,11 @@ public class MyGdxGame extends ApplicationAdapter {
 			super(i, spriteSet);
 			this.enemyId = j;
 			this.current = current;
+		}
+		public Enemy(int i, Animation<TextureRegion> spriteSet, int j)
+		{
+			super(i, spriteSet);
+			this.enemyId = j;
 		}
 
 		public Animation<TextureRegion> getSprites() {
@@ -551,27 +671,42 @@ public class MyGdxGame extends ApplicationAdapter {
 			this.current = n;
 		}
         public void DecideObjective() {
+			ArrayList<Node> nodes = nodeList;
 			ArrayList<Node> nodeChoice = new ArrayList<Node>();
-            for(int n : current.neighbours){
-            	for (Node node : nodeList){
-            		if (node.getName() == n){
+            for(int n : current.getNeighbours()){
+            	for (Node node : nodes){
+            		if (node.getName() == n && node.getStatus() != 3){
 						nodeChoice.add(node);
 					}
 				}
 			}
-            this.Target  = nodeChoice.get((int)(Math.random()*nodeChoice.size()));
+            for(Node nodeSelect: nodeChoice){
+                if(nodeSelect.getStatus() == 2){
+                    this.Target = nodeSelect;
+                    continue;
+                }
+                else
+                {
+                    this.Target = nodeChoice.get((int)((Math.random()*nodeChoice.size() + 1)) - 1);
+                }
+            }
         }
         public Node getObjective() {
 		    if(this.isCaught) {
                 return new Node();
             }
 		    else {
-	//	    	this.DecideObjective();
                 return this.Target;
             }
         }
         public void setTargeting(boolean targeting){this.isTargeting = targeting;}
         public boolean getTargeting(){return isTargeting;}
+        public void setDelay(int delay){this.moveDelay = delay;}
+        public int getDelay(){return moveDelay;}
+        public Node getCurrent(){return current;}
+        public int getHacking(){return isHacking;}
+        public void setHacking(int toHack){this.isHacking = toHack;}
+        public void setTarget(Node n){this.Target = n;}
 	}
 
 	public class Player extends Character{
@@ -597,7 +732,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		public void setCurrent(Node n){}
 		public void setTargeting(boolean targeting){}
 		public boolean getTargeting(){return false;}
-
+		public void setDelay(int delay){}
+		public int getDelay(){return -1;}
+		public Node getCurrent(){return new Node();}
+		public int getHacking(){return -1;}
+		public void setHacking(int toHack){}
+		public void setTarget(Node n){}
 	}
 
 	public class Location extends Component{
@@ -629,15 +769,22 @@ public class MyGdxGame extends ApplicationAdapter {
         public void setCurrent(Node n){}
 		public void setTargeting(boolean targeting){}
 		public boolean getTargeting(){return false;}
+        public void setDelay(int delay){}
+		public Node getCurrent(){return new Node();}
+		public int getDelay(){return -1;}
+		public int getHacking(){return -1;}
+		public void setHacking(int toHack){}
+		public void setTarget(Node n){}
 	}
 
 
 
-	public class Node{
-	    int name;
-	    Point coords;
-	    int status;
-	    ArrayList<Integer> neighbours;
+
+	private class Node{
+	    private int name;
+	    private	Point coords;
+	    private int status;
+	    private ArrayList<Integer> neighbours;
 
 	    public Node(){this.name = -1;}
 	    public Node(int name, Point coords, int status, ArrayList neighbours){
@@ -646,6 +793,12 @@ public class MyGdxGame extends ApplicationAdapter {
 	        this.status = status;
 	        this.neighbours = neighbours;
         }
+        public Node(Node n){
+	    	this.name = n.getName();
+	    	this.coords = n.getCoords();
+	    	this.status = n.getStatus();
+	    	this.neighbours = n.getNeighbours();
+		}
 
         public int getName(){return name;}
         public void setName(int name1){this.name = name1;}
@@ -659,24 +812,24 @@ public class MyGdxGame extends ApplicationAdapter {
 
     public void makeNodes(){
 		n1 = new Node(1, new Point(250, 510), 1, new ArrayList<Integer>(Arrays.asList(2, 3)));
-		n2 = new Node(2, new Point(250, 450), 2, new ArrayList<Integer>(Arrays.asList(1)));
+		n2 = new Node(2, new Point(250, 430), 2, new ArrayList<Integer>(Arrays.asList(1)));
 		n3 = new Node(3, new Point(325, 500), 1, new ArrayList<Integer>(Arrays.asList(1,4)));
-		n4 = new Node(4, new Point(325, 370), 1, new ArrayList<Integer>(Arrays.asList(3, 5, 12)));
-		n5 = new Node(5, new Point(170, 370), 2, new ArrayList<Integer>(Arrays.asList(4, 6)));
+		n4 = new Node(4, new Point(325, 370), 1, new ArrayList<Integer>(Arrays.asList(3, 5, 45)));
+		n5 = new Node(5, new Point(170, 360), 2, new ArrayList<Integer>(Arrays.asList(4, 6)));
 		n6 = new Node(6, new Point(50, 370), 1, new ArrayList<Integer>(Arrays.asList(5, 7)));
-		n7 = new Node(7, new Point(50, 250), 1, new ArrayList<Integer>(Arrays.asList(6, 8, 10)));
-		n8 = new Node(8, new Point(50, 30), 2, new ArrayList<Integer>(Arrays.asList(7, 9, 10)));
+		n7 = new Node(7, new Point(50, 250), 1, new ArrayList<Integer>(Arrays.asList(6, 8, 9, 10)));
+		n8 = new Node(8, new Point(40, 30), 2, new ArrayList<Integer>(Arrays.asList(7, 9, 10)));
 		n9 = new Node(9, new Point(250, 30), 1, new ArrayList<Integer>(Arrays.asList(7, 8, 10, 11)));
 		n10 = new Node(10, new Point(250, 300), 2, new ArrayList<Integer>(Arrays.asList(7, 8, 9)));
 		n11 = new Node(11, new Point(310, 30), 1, new ArrayList<Integer>(Arrays.asList(9, 12, 13)));
-		n12 = new Node(12, new Point(340, 200), 1, new ArrayList<Integer>(Arrays.asList(4, 14, 11, 13)));
+		n12 = new Node(12, new Point(340, 200), 1, new ArrayList<Integer>(Arrays.asList(45, 11, 13)));
 		n13 = new Node(13, new Point(350, 30), 2, new ArrayList<Integer>(Arrays.asList(11, 12)));
-		n14 = new Node(14, new Point(420, 300), 1, new ArrayList<Integer>(Arrays.asList(12, 15, 22, 36)));
-		n15 = new Node(15, new Point(420, 370), 1, new ArrayList<Integer>(Arrays.asList(14, 16, 17, 18)));
+		n14 = new Node(14, new Point(420, 300), 1, new ArrayList<Integer>(Arrays.asList(45, 15, 22, 36)));
+		n15 = new Node(15, new Point(420, 360), 1, new ArrayList<Integer>(Arrays.asList(14, 16, 17, 18)));
 		n16 = new Node(16, new Point(420, 500), 2, new ArrayList<Integer>(Arrays.asList(15, 17, 18)));
-		n17 = new Node(17, new Point(550, 480), 1, new ArrayList<Integer>(Arrays.asList(15, 16, 18, 19)));
-		n18 = new Node(18, new Point(580, 375), 2, new ArrayList<Integer>(Arrays.asList(15, 16, 17)));
-		n19 = new Node(19, new Point(750, 520), 1, new ArrayList<Integer>(Arrays.asList(17, 20, 21)));
+		n17 = new Node(17, new Point(550, 500), 1, new ArrayList<Integer>(Arrays.asList(15, 16, 18, 19)));
+		n18 = new Node(18, new Point(570, 370), 2, new ArrayList<Integer>(Arrays.asList(15, 16, 17)));
+		n19 = new Node(19, new Point(750, 500), 1, new ArrayList<Integer>(Arrays.asList(17, 20, 21)));
 		n20 = new Node(20, new Point(870, 500), 2, new ArrayList<Integer>(Arrays.asList(19, 21)));
 		n21 = new Node(21, new Point(860, 350), 1, new ArrayList<Integer>(Arrays.asList(19, 20, 24)));
 		n22 = new Node(22, new Point(660, 300), 1, new ArrayList<Integer>(Arrays.asList(14, 23, 24)));
@@ -684,12 +837,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		n24 = new Node(24, new Point(860, 300), 1, new ArrayList<Integer>(Arrays.asList(21, 22, 25)));
 		n25 = new Node(25, new Point(1080, 300), 1, new ArrayList<Integer>(Arrays.asList(24, 26, 29)));
 		n26 = new Node(26, new Point(1080, 380), 1, new ArrayList<Integer>(Arrays.asList(25, 27, 28)));
-		n27 = new Node(27, new Point(950, 370), 2, new ArrayList<Integer>(Arrays.asList(26, 28)));
+		n27 = new Node(27, new Point(940, 370), 2, new ArrayList<Integer>(Arrays.asList(26, 28)));
 		n28 = new Node(28, new Point(1080, 510), 2, new ArrayList<Integer>(Arrays.asList(26, 27)));
 		n29 = new Node(29, new Point(1090, 110), 1, new ArrayList<Integer>(Arrays.asList(25, 30, 32)));
 		n30 = new Node(30, new Point(1090, 70), 1, new ArrayList<Integer>(Arrays.asList(29, 31)));
 		n31 = new Node(31, new Point(950, 30), 2, new ArrayList<Integer>(Arrays.asList(30)));
-		n32 = new Node(32, new Point(900, 140), 1, new ArrayList<Integer>(Arrays.asList(29, 33)));
+		n32 = new Node(32, new Point(900, 120), 1, new ArrayList<Integer>(Arrays.asList(29, 33)));
 		n33 = new Node(33, new Point(870, 110), 1, new ArrayList<Integer>(Arrays.asList(32, 34, 42)));
 		n34 = new Node(34, new Point(870, 30), 1, new ArrayList<Integer>(Arrays.asList(33, 35)));
 		n35 = new Node(35, new Point(430, 30), 1, new ArrayList<Integer>(Arrays.asList(34, 36)));
@@ -702,6 +855,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		n42 = new Node(42, new Point(820, 100), 1, new ArrayList<Integer>(Arrays.asList(33, 37, 39, 43, 44)));
 		n43 = new Node(43, new Point(710, 170), 2, new ArrayList<Integer>(Arrays.asList(37, 42, 44)));
 		n44 = new Node(44, new Point(510, 90), 2, new ArrayList<Integer>(Arrays.asList(37, 42, 43)));
+		n45 = new Node(45, new Point(340, 250), 1, new ArrayList<Integer>(Arrays.asList(4, 12, 14)));
 		nodeList.add(n1);
 		nodeList.add(n2);
 		nodeList.add(n3);
@@ -746,5 +900,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		nodeList.add(n42);
 		nodeList.add(n43);
 		nodeList.add(n44);
+		nodeList.add(n45);
 	}
 }
