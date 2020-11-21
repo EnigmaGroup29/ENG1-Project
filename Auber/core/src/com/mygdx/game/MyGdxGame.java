@@ -109,7 +109,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	Node n35;
 	Node n36;
 	Node n37;
-	Node n38;
 	Node n39;
 	Node n40;
 	Node n41;
@@ -380,6 +379,9 @@ public class MyGdxGame extends ApplicationAdapter {
 			for (Entity enemy : enemies) {
 
 				Node n = enemy.getComponent(0).getCurrent();
+				if(enemy.getComponent(0).getObjective() == null) {
+					enemy.getComponent(0).DecideObjective();
+				}
 				Node n1 = enemy.getComponent(0).getObjective();
 
 				if(enemy.getComponent(0).getHacking() == 1)
@@ -396,10 +398,12 @@ public class MyGdxGame extends ApplicationAdapter {
 						{
 							n1.setStatus(3);
 							enemy.getComponent(0).setHacking(1500);
+							enemy.getComponent(0).setPrevious(n);
 							enemy.getComponent(0).setCurrent(n1);
 						}
 						else
 						{
+							enemy.getComponent(0).setPrevious(n);
 							enemy.getComponent(0).setCurrent(n1);
 							enemy.getComponent(0).DecideObjective();
 							n1 = enemy.getComponent(0).getObjective();
@@ -613,6 +617,8 @@ public class MyGdxGame extends ApplicationAdapter {
         public abstract int getHacking();
         public abstract void setHacking(int toHack);
         public abstract void setTarget(Node n);
+        public abstract void setPrevious(Node n);
+        public abstract Node getPrevious();
 
 	}
 
@@ -639,6 +645,7 @@ public class MyGdxGame extends ApplicationAdapter {
         boolean isTargeting;
         int moveDelay = 0;
         int isHacking;
+        Node previous;
 
 		public Enemy(){
 		}
@@ -670,9 +677,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		public void setCurrent(Node n){
 			this.current = n;
 		}
-        public void DecideObjective() {
+        public void DecideObjective()
+		{
+			this.Target = new Node();
 			ArrayList<Node> nodes = nodeList;
 			ArrayList<Node> nodeChoice = new ArrayList<Node>();
+			ArrayList<Node> nodeChoice1 = new ArrayList<Node>();
             for(int n : current.getNeighbours()){
             	for (Node node : nodes){
             		if (node.getName() == n && node.getStatus() != 3){
@@ -683,13 +693,21 @@ public class MyGdxGame extends ApplicationAdapter {
             for(Node nodeSelect: nodeChoice){
                 if(nodeSelect.getStatus() == 2){
                     this.Target = nodeSelect;
-                    continue;
+                    break;
                 }
-                else
+                else if(nodeSelect != previous && nodeSelect.getStatus() != 4)
                 {
-                    this.Target = nodeChoice.get((int)((Math.random()*nodeChoice.size() + 1)) - 1);
-                }
+					nodeChoice1.add(nodeSelect);
+				}
             }
+            if(this.Target.getName() == -1 && !nodeChoice1.isEmpty())
+			{
+				this.Target = nodeChoice1.get((int)((Math.random()*nodeChoice1.size() + 1)) - 1);
+			}
+            else if(this.Target.getName() == -1)
+			{
+				this.Target = previous;
+			}
         }
         public Node getObjective() {
 		    if(this.isCaught) {
@@ -707,6 +725,8 @@ public class MyGdxGame extends ApplicationAdapter {
         public int getHacking(){return isHacking;}
         public void setHacking(int toHack){this.isHacking = toHack;}
         public void setTarget(Node n){this.Target = n;}
+        public void setPrevious(Node n){this.previous = n;}
+        public Node getPrevious(){return previous;}
 	}
 
 	public class Player extends Character{
@@ -738,6 +758,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		public int getHacking(){return -1;}
 		public void setHacking(int toHack){}
 		public void setTarget(Node n){}
+		public void setPrevious(Node n){};
+		public Node getPrevious(){return new Node();}
 	}
 
 	public class Location extends Component{
@@ -775,6 +797,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		public int getHacking(){return -1;}
 		public void setHacking(int toHack){}
 		public void setTarget(Node n){}
+		public void setPrevious(Node n){};
+		public Node getPrevious(){return new Node();}
 	}
 
 
@@ -814,31 +838,31 @@ public class MyGdxGame extends ApplicationAdapter {
 		n1 = new Node(1, new Point(250, 510), 1, new ArrayList<Integer>(Arrays.asList(2, 3)));
 		n2 = new Node(2, new Point(250, 430), 2, new ArrayList<Integer>(Arrays.asList(1)));
 		n3 = new Node(3, new Point(325, 500), 1, new ArrayList<Integer>(Arrays.asList(1,4)));
-		n4 = new Node(4, new Point(325, 370), 1, new ArrayList<Integer>(Arrays.asList(3, 5, 45)));
-		n5 = new Node(5, new Point(170, 360), 2, new ArrayList<Integer>(Arrays.asList(4, 6)));
-		n6 = new Node(6, new Point(50, 370), 1, new ArrayList<Integer>(Arrays.asList(5, 7)));
-		n7 = new Node(7, new Point(50, 250), 1, new ArrayList<Integer>(Arrays.asList(6, 8, 9, 10)));
-		n8 = new Node(8, new Point(40, 30), 2, new ArrayList<Integer>(Arrays.asList(7, 9, 10)));
-		n9 = new Node(9, new Point(250, 30), 1, new ArrayList<Integer>(Arrays.asList(7, 8, 10, 11)));
-		n10 = new Node(10, new Point(250, 300), 2, new ArrayList<Integer>(Arrays.asList(7, 8, 9)));
+		n4 = new Node(4, new Point(325, 370), 1, new ArrayList<Integer>(Arrays.asList(3, 5, 6, 45)));
+		n5 = new Node(5, new Point(170, 360), 2, new ArrayList<Integer>(Arrays.asList(4)));
+		n6 = new Node(6, new Point(50, 370), 1, new ArrayList<Integer>(Arrays.asList(4, 7)));
+		n7 = new Node(7, new Point(50, 250), 1, new ArrayList<Integer>(Arrays.asList(6, 9, 10)));
+		n8 = new Node(8, new Point(40, 30), 2, new ArrayList<Integer>(Arrays.asList(9)));
+		n9 = new Node(9, new Point(250, 30), 1, new ArrayList<Integer>(Arrays.asList(7, 8, 11)));
+		n10 = new Node(10, new Point(250, 300), 2, new ArrayList<Integer>(Arrays.asList(7)));
 		n11 = new Node(11, new Point(310, 30), 1, new ArrayList<Integer>(Arrays.asList(9, 12, 13)));
-		n12 = new Node(12, new Point(340, 200), 1, new ArrayList<Integer>(Arrays.asList(45, 11, 13)));
-		n13 = new Node(13, new Point(350, 30), 2, new ArrayList<Integer>(Arrays.asList(11, 12)));
+		n12 = new Node(12, new Point(340, 200), 1, new ArrayList<Integer>(Arrays.asList(45, 11)));
+		n13 = new Node(13, new Point(350, 30), 2, new ArrayList<Integer>(Arrays.asList(11)));
 		n14 = new Node(14, new Point(420, 300), 1, new ArrayList<Integer>(Arrays.asList(45, 15, 22, 36)));
-		n15 = new Node(15, new Point(420, 360), 1, new ArrayList<Integer>(Arrays.asList(14, 16, 17, 18)));
-		n16 = new Node(16, new Point(420, 500), 2, new ArrayList<Integer>(Arrays.asList(15, 17, 18)));
-		n17 = new Node(17, new Point(550, 500), 1, new ArrayList<Integer>(Arrays.asList(15, 16, 18, 19)));
-		n18 = new Node(18, new Point(570, 370), 2, new ArrayList<Integer>(Arrays.asList(15, 16, 17)));
+		n15 = new Node(15, new Point(420, 360), 1, new ArrayList<Integer>(Arrays.asList(14, 17, 18)));
+		n16 = new Node(16, new Point(420, 500), 2, new ArrayList<Integer>(Arrays.asList(17)));
+		n17 = new Node(17, new Point(550, 500), 1, new ArrayList<Integer>(Arrays.asList(15, 16, 19)));
+		n18 = new Node(18, new Point(570, 370), 2, new ArrayList<Integer>(Arrays.asList(15)));
 		n19 = new Node(19, new Point(750, 500), 1, new ArrayList<Integer>(Arrays.asList(17, 20, 21)));
-		n20 = new Node(20, new Point(870, 500), 2, new ArrayList<Integer>(Arrays.asList(19, 21)));
-		n21 = new Node(21, new Point(860, 350), 1, new ArrayList<Integer>(Arrays.asList(19, 20, 24)));
+		n20 = new Node(20, new Point(870, 500), 2, new ArrayList<Integer>(Arrays.asList(19)));
+		n21 = new Node(21, new Point(860, 350), 1, new ArrayList<Integer>(Arrays.asList(19, 24)));
 		n22 = new Node(22, new Point(660, 300), 1, new ArrayList<Integer>(Arrays.asList(14, 23, 24)));
 		n23 = new Node(23, new Point(660, 420), 2, new ArrayList<Integer>(Arrays.asList(22)));
 		n24 = new Node(24, new Point(860, 300), 1, new ArrayList<Integer>(Arrays.asList(21, 22, 25)));
 		n25 = new Node(25, new Point(1080, 300), 1, new ArrayList<Integer>(Arrays.asList(24, 26, 29)));
 		n26 = new Node(26, new Point(1080, 380), 1, new ArrayList<Integer>(Arrays.asList(25, 27, 28)));
-		n27 = new Node(27, new Point(940, 350), 2, new ArrayList<Integer>(Arrays.asList(26, 28)));
-		n28 = new Node(28, new Point(1080, 510), 2, new ArrayList<Integer>(Arrays.asList(26, 27)));
+		n27 = new Node(27, new Point(940, 350), 2, new ArrayList<Integer>(Arrays.asList(26)));
+		n28 = new Node(28, new Point(1080, 510), 2, new ArrayList<Integer>(Arrays.asList(26)));
 		n29 = new Node(29, new Point(1090, 110), 1, new ArrayList<Integer>(Arrays.asList(25, 30, 32)));
 		n30 = new Node(30, new Point(1090, 70), 1, new ArrayList<Integer>(Arrays.asList(29, 31)));
 		n31 = new Node(31, new Point(950, 30), 2, new ArrayList<Integer>(Arrays.asList(30)));
@@ -847,14 +871,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		n34 = new Node(34, new Point(870, 30), 1, new ArrayList<Integer>(Arrays.asList(33, 35)));
 		n35 = new Node(35, new Point(430, 30), 1, new ArrayList<Integer>(Arrays.asList(34, 36)));
 		n36 = new Node(36, new Point(430, 170), 1, new ArrayList<Integer>(Arrays.asList(14, 35, 37)));
-		n37 = new Node(37, new Point(500, 170), 1, new ArrayList<Integer>(Arrays.asList(36, 38, 42, 43, 44)));
-		n38 = new Node(38, new Point(710, 250), 1, new ArrayList<Integer>(Arrays.asList(37, 39)));
-		n39 = new Node(39, new Point(820, 220), 1, new ArrayList<Integer>(Arrays.asList(38, 40, 42)));
+		n37 = new Node(37, new Point(500, 170), 1, new ArrayList<Integer>(Arrays.asList(36, 42, 44)));
+		n39 = new Node(39, new Point(820, 220), 1, new ArrayList<Integer>(Arrays.asList(40, 42)));
 		n40 = new Node(40, new Point(870, 220), 1, new ArrayList<Integer>(Arrays.asList(39, 41)));
 		n41 = new Node(41, new Point(1000, 180), 2, new ArrayList<Integer>(Arrays.asList(40)));
-		n42 = new Node(42, new Point(820, 100), 1, new ArrayList<Integer>(Arrays.asList(33, 37, 39, 43, 44)));
-		n43 = new Node(43, new Point(710, 170), 2, new ArrayList<Integer>(Arrays.asList(37, 42, 44)));
-		n44 = new Node(44, new Point(510, 90), 2, new ArrayList<Integer>(Arrays.asList(37, 42, 43)));
+		n42 = new Node(42, new Point(820, 100), 1, new ArrayList<Integer>(Arrays.asList(33, 37, 39, 43)));
+		n43 = new Node(43, new Point(710, 170), 2, new ArrayList<Integer>(Arrays.asList(42)));
+		n44 = new Node(44, new Point(510, 90), 2, new ArrayList<Integer>(Arrays.asList(37)));
 		n45 = new Node(45, new Point(340, 250), 1, new ArrayList<Integer>(Arrays.asList(4, 12, 14)));
 		nodeList.add(n1);
 		nodeList.add(n2);
@@ -893,7 +916,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		nodeList.add(n35);
 		nodeList.add(n36);
 		nodeList.add(n37);
-		nodeList.add(n38);
 		nodeList.add(n39);
 		nodeList.add(n40);
 		nodeList.add(n41);
