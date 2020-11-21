@@ -12,9 +12,14 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.awt.*;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import java.io.File;
 public class MyGdxGame extends ApplicationAdapter {
 	SpriteBatch batch;
 	Sprite gameMap;
@@ -370,6 +375,19 @@ public class MyGdxGame extends ApplicationAdapter {
 				Auber.getComponent(1).setLocation(new Point(480, (int) (camera.viewportHeight - 120)));
 				Auber.getComponent(0).setHealth(100);
 				teleDelay = 300;
+			}
+			if (Gdx.input.isKeyPressed(Input.Keys.P)) {
+				try {
+
+					Path path = Paths.get("test.mp4");
+					Desktop.getDesktop().open(new File(String.valueOf(path)));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+
+
+
 			}
 			if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
 				gameState = 2;
