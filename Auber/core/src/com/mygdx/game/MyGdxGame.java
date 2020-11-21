@@ -837,7 +837,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		n24 = new Node(24, new Point(860, 300), 1, new ArrayList<Integer>(Arrays.asList(21, 22, 25)));
 		n25 = new Node(25, new Point(1080, 300), 1, new ArrayList<Integer>(Arrays.asList(24, 26, 29)));
 		n26 = new Node(26, new Point(1080, 380), 1, new ArrayList<Integer>(Arrays.asList(25, 27, 28)));
-		n27 = new Node(27, new Point(940, 370), 2, new ArrayList<Integer>(Arrays.asList(26, 28)));
+		n27 = new Node(27, new Point(940, 350), 2, new ArrayList<Integer>(Arrays.asList(26, 28)));
 		n28 = new Node(28, new Point(1080, 510), 2, new ArrayList<Integer>(Arrays.asList(26, 27)));
 		n29 = new Node(29, new Point(1090, 110), 1, new ArrayList<Integer>(Arrays.asList(25, 30, 32)));
 		n30 = new Node(30, new Point(1090, 70), 1, new ArrayList<Integer>(Arrays.asList(29, 31)));
