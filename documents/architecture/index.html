@@ -47,6 +47,9 @@
                 <h3 id = "one">Abstract representation</h3>
 
                 <h4 class="arch">1) Sequence diagram</h4>
+                <p>The aim of this diagram is to show how objects interact with each other in a particular scenario, namely, to represent 
+                  an attempt of a player to arrest infiltrators or other such scenarios. During this time, we weren’t set on whether we could 
+                  arrest the enemies while their ability is active.</p>
                 <div class="row">
                     <div class="column" style="width:49%">
                         <img class = "seq" src = "sequence.png" style="width=100%">
@@ -59,10 +62,27 @@
                 </div>
 
                 <h4 class="arch">2) State diagram</h4>
+                <p>This state diagram expresses the different states of the game, such as the main menu, mode selection screen, pause menu, and more. 
+                  To construct the state diagram, we used a web diagramming tool known as Creately.</p>
                 <img src = "state.png" class="state"></br>
                 <p style="text-align:center"><a class = "imglink" target="_blank" href="state.png">View in a full size</a></p>
 
                 <h4 class="arch">3) Class diagram</h4>
+                <p>We have used a UML(Unified Modelling Language) class diagram. We used it to represent the abstract architecture of the game and it 
+                  was produced using GenMyModel.</p>
+                <p>We initially started our architecture design using large amounts of inheritance; after all, it seemed natural to have static and 
+                  dynamic classes that inherited from an entity class - the static objects would be static and the dynamic objects would be dynamic. 
+                  However, we soon started to run into issues. For example, when we started planning how the architecture would allow for different AI
+                  behaviour depending on the type of ability the enemy had. We would need to exchange information across different inheritance levels.</p>
+                <p>As a result (and with the help of the lectures), we switched to another type of architecture, the entity-component system. This would 
+                  allow us to implement the behaviour we wanted within specialised components, making the implementation and maintenance of such code more 
+                  manageable.</p>
+                <p>The more we looked into this type of architecture, the more it made sense. In this architecture, (almost) everything is an entity and 
+                  then functionality can be added to them via components. Additionally, any component functionality that is dependent on other components 
+                  can be implemented using the getComponent/getComponents functions on the entity class, allowing a component to get another if it is 
+                  required for operation.</p>
+                <p>Regardless, this architecture model reduced the architectural complexity compared to our previous architecture.</p>
+
                 <img src = "class.png" class="state"></br>
                 <p style="text-align:center"><a class = "imglink" target="_blank" href="class.png">View in a full size</a></p>
 
