@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.awt.*;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -76,6 +77,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	ArrayList<Animation> anims  = new ArrayList<Animation>();
 
 	ArrayList<Node> nodeList = new ArrayList<Node>();
+
+	boolean global = false;
+	File file = null;
 
 
 
@@ -333,15 +337,35 @@ public class MyGdxGame extends ApplicationAdapter {
 				teleDelay = 300;
 			}
 			if (Gdx.input.isKeyPressed(Input.Keys.P)) {
+				//using ideas from https://stackoverflow.com/questions/25669874/opening-an-image-file-from-java-inputstream
+				//i am not allowed to open files that are in the jar as a file so i download the file to a temp file from the jar file so we can use it
+				if (global == false){
+					ClassLoader classLoader = getClass().getClassLoader();
+					InputStream imageStream = classLoader.getResourceAsStream("demo.mp4");
+					try {
+						file = File.createTempFile("demo", ".mp4");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					try (java.io.FileOutputStream out = new java.io.FileOutputStream(file)) {
+						byte[] buffer = new byte[1024];
+						int len;
+						while ((len = imageStream.read(buffer)) != -1) {
+							out.write(buffer, 0, len);
+						}
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
+					global = true;
+				}
+				
 				try {
+					Desktop.getDesktop().open(file);
+					file.deleteOnExit();
 
-					Path path = Paths.get("test.mp4");
-					Desktop.getDesktop().open(new File(String.valueOf(path)));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-
-
 
 
 			}
