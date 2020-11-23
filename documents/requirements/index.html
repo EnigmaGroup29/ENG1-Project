@@ -301,40 +301,42 @@
                 <ul class="main">
                    <li>Name: The player uses the teleporter in the room</li>
                    <li>Actors
-                      <ul><li>Player</li>
+                      <ul class="a"><li>Player</li>
                          <li>Room teleporter</li></ul>
                    </li>
                    <li>Precondition: The player is standing on the teleporter pad</li>
                    <li>Trigger: The player has pressed the key to interact with the teleporter</li>
                    <li>Main Success Scenario:
-                      <ul><li>The players character is teleported to the next room with a teleporter</li></ul></li>
+                      <ul class="a"><li>The players character is teleported to the next room with a teleporter</li></ul></li>
                    <li>Success Postcondition: the teleporter is available for use by the player again</li>
                 </ul>
+                       
                 <ul class="main">
                    <li>Name:  Open day players</li>
                    <li>Actors
-                      <ul><li>New Player</li>
+                      <ul class="a"><li>New Player</li>
                          <li>Game</li></ul>
                    </li>
                    <li>Precondition: The game is set up and ready to play</li>
                    <li>Trigger: The player starts moving the character</li>
                    <li>Main Success Scenario:
-                      <ul><li>The player either arrests all the infiltrators or all the systems of the ship are destroyed</li></ul></li>
+                      <ul class="a"><li>The player either arrests all the infiltrators or all the systems of the ship are destroyed</li></ul></li>
                    <li>Success Postcondition: the game resets for another player to start playing</li>
                    <li>Minimal Postcondition: after a specific amount of time of no user interaction the game will reset automatically</li>
                 </ul>
+                       
                 <ul class="main">
                    <li>Name:  Demo gameplay</li>
                    <li>Actors
-                      <ul><li>Prospective students</li>
+                      <ul class="a"><li>Prospective students</li>
                          <li>Staff</li></ul>
                    </li>
                    <li>Precondition: The pre-scripted game is ready to be demonstrated</li>
                    <li>Trigger:  One of the students is willing to play the demo mode</li>
                    <li>Main Success Scenario:
-                      <ul><li>The student watches the pre-scripted gameplay that shows how the game operates till the end</li></ul></li>
+                      <ul class="a"><li>The student watches the pre-scripted gameplay that shows how the game operates till the end</li></ul></li>
                    <li>Secondary Scenario:
-                      <ul><li>Student has an issue and asks a staff member for help</li></ul></li>
+                      <ul class="a"><li>Student has an issue and asks a staff member for help</li></ul></li>
                    <li>Success Postcondition: the game resets for another player to start the demo/normal mode</li>
                    <li>Minimal Postcondition: the demo gameplay is available to everyone at any time</li>
                 </ul>
