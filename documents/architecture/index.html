@@ -105,12 +105,12 @@
                 <p style="text-align:center"><a class = "imglink" target="_blank" href="concrete_class.png">View full size</a></p>
                 
                 <h3 id = "three">Justification</h3>
-                <p>In our Abstract architecture we decided that we should first split the game into its separate parts which became our starting classes, 
+                <p>In our Abstract architecture, we decided that we should first split the game into its separate parts which became our starting classes, 
                   these were the main class, entity class, player class and enemy class. We expanded on these to make our program more modular by separating 
                   out common features between classes into their own class and using inheritance to bring features down. This modularity allows us to use 
                   common code multiple times such as the character class which collects common features of enemies and the player as well as separating out 
                   the enemy class into the 3 unique types of enemy which inherit from the enemy class. We decided that the controller for all components should 
-                  be separate from the actual class for that component so we only needed to write code for movement once and can fit the module for it into 
+                  be separate from the actual class for that component, so we only needed to write code for movement once and can fit the module for it into 
                   any component that requires it.</p>
                  <p>The key changes we made between the class diagrams and how we implemented our code were that we merged several classes together that we 
                    initially thought would be more complex than they actually were because of the features provided by our game engine (libgdx). These features 
@@ -121,11 +121,11 @@
                    the information about the graph and allowed the Enemies AI to navigate through the map. The key layout of the Concrete and Abstract architectures 
                    remain the same only having the less critical subclasses combined such as enemies and unique enemies whilst the main class structure remains 
                    the same having built off the ideas decided in the Abstract class diagram.</p>
-                  <p>In both the Concrete and the Abstract state diagrams we decided to provide a tutorial screen to the user which provides key information 
-                    that the player needs to know as well as the controls. Once in the game screen you have the option to load the demo video by pressing “P”. 
+                  <p>In both the Concrete and the Abstract state diagrams, we decided to provide a tutorial screen to the user which provides key information 
+                    that the player needs to know as well as the controls. Once in the game screen, you have the option to load the demo video by pressing “P”. 
                     This video shows a full game and demonstrates its features (UR_DEMO). The game enters the win screen if all imposters are arrested and goes 
                     to the lose screen if all systems are destroyed (UR_GAME_END).</p>
-                  <p>In our Concrete architecture we store the map as a PNG which contains multiple unique rooms such as the (brig, Kitchen, mess, bunks, armoury, 
+                  <p>In our Concrete architecture, we store the map as a PNG which contains multiple unique rooms such as the (brig, Kitchen, mess, bunks, armoury, 
                     infirmary, garden and cargo) (UR_ROOM_TYPES), These rooms are colour coded so that they are easily identifiable to the player, as well as having 
                     their names at the main entrances.</p>
                   <p>Scattered around the map we have 15 systems which can be sabotaged by the infiltrators (UR_SYSTEMS). Having the systems as images on the map 
@@ -135,26 +135,26 @@
                     architecture as this meant we could move them along pre-set paths with a more simple algorithm to decide their next location to visit. This 
                     is an improvement over having them being able to move freely around the map as it ensures they cannot get stuck on walls and rooms and also 
                     means we can direct them more effectively.</p>
-                    <p>In our Concrete and Abstract architecture we decided that we should press a key to instantly teleport to the infirmary (UR_HEAL). Although in 
+                    <p>In our Concrete and Abstract architecture, we decided that we should press a key to instantly teleport to the infirmary (UR_HEAL). Although in 
                       our Concrete architecture we also decided that a cooldown on this ability should be added so that users will still respect the damage that can be 
                       caused by the infiltrators, as well as meaning that the user is incentivise to not use the teleport as a mode of transportation instead of just to 
                       heal.</p>
-                    <p>In our Concrete and Abstract architecture we decided that we should implement 3 unique abilities (UR_AI_ABILITIES) which we decided should be 
+                    <p>In our Concrete and Abstract architecture, we decided that we should implement 3 unique abilities (UR_AI_ABILITIES) which we decided should be 
                       confusion, where an effect appears over the user’s screen making it harder to navigate; invisibility, where the enemy’s sprite stops being shown; 
                       and breaking the teleporters temporarily. We also decided to add an “ability” that all infiltrators would have which did damage to players if they 
-                      stood on top of them. We made this change as in our Abstract architecture we planned on having a infiltrator whose unique ability would be to attack 
+                      stood on top of them. We made this change as in our Abstract architecture we planned on having an infiltrator whose unique ability would be to attack 
                       the player, but we decided it would be more interesting to disable teleporters and so we added a passive damage ability to all enemies to add a 
                       level of risk to arresting them while on low health. This incentivised players to use the infirmary often to maintain their health.</p>
                     <p>Originally in our Abstract architecture we thought we would make a notification for a room’s sabotage by making an effect for the corresponding room 
                       appear on the screen, however in our Concrete architecture we decided to instead show a red light over a system to show it has been sabotaged followed 
-                      by a grey light to show its been destroyed (UR_NOTIFICATION). We did this because it was frustrating for a new player to navigate the map and locate 
+                      by a grey light to show it has been destroyed (UR_NOTIFICATION). We did this because it was frustrating for a new player to navigate the map and locate 
                       the systems so we changed the way it worked, making it so the player could see the whole map including all infiltrators locations and system locations 
                       to make the game less confusing for new players.</p>
                     <p>The players can move over the infiltrators to arrest them and send them to the brig (UR_ARREST). It was decided to allow the player to be able to 
-                      arrest enemies while their abilities were active as it wasn’t fun being forced to follow an enemy while waiting for their ability to end. This is the 
-                      same in both Concrete and Abstract architecture except for that in the Concrete we decided that the user should be teleported to the brig along with 
+                      arrest enemies while their abilities were active as it was not fun being forced to follow an enemy while waiting for their ability to end. This is the 
+                      same in both Concrete and Abstract architecture, except for that in the Concrete we decided that the user should be teleported to the brig along with 
                       the imposter so that the user has to make more trips around the map and meaning that they cannot arrest a large amount of the imposters very quickly 
-                      and cause the game to end too early. The game runs in real time as both the Imposters and the players can move around the map smoothly (UR_REAL_TIME) 
+                      and cause the game to end too early. The game runs in real time as both the Imposters and the players can move around the map smoothly (UR_REAL_TIME), 
                       this is the same in both architectures.</p>
                     <p>The final key change we made between the Concrete and the Abstract architectures was that each room teleporter is linked in a pair, meaning that instead 
                       of being able to cycle between all the rooms you instead got teleported to the other linked teleporter in the pair. This allows users to quickly 
