@@ -12,9 +12,15 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import java.io.File;
 public class MyGdxGame extends ApplicationAdapter {
 	SpriteBatch batch;
 	Sprite gameMap;
@@ -72,50 +78,9 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	ArrayList<Node> nodeList = new ArrayList<Node>();
 
-	Node n1;
-	Node n2;
-	Node n3;
-	Node n4;
-	Node n5;
-	Node n6;
-	Node n7;
-	Node n8;
-	Node n9;
-	Node n10;
-	Node n11;
-	Node n12;
-	Node n13;
-	Node n14;
-	Node n15;
-	Node n16;
-	Node n17;
-	Node n18;
-	Node n19;
-	Node n20;
-	Node n21;
-	Node n22;
-	Node n23;
-	Node n24;
-	Node n25;
-	Node n26;
-	Node n27;
-	Node n28;
-	Node n29;
-	Node n30;
-	Node n31;
-	Node n32;
-	Node n33;
-	Node n34;
-	Node n35;
-	Node n36;
-	Node n37;
-	Node n39;
-	Node n40;
-	Node n41;
-	Node n42;
-	Node n43;
-	Node n44;
-	Node n45;
+	boolean global = false;
+	File file = null;
+
 
 
 	//@Override
@@ -194,35 +159,35 @@ public class MyGdxGame extends ApplicationAdapter {
         Component[] listA = new Component[]{new Player(101, auberRun), new Location(201, new Point(30, 500))};
         Auber = new Entity(listA, 101);
 
-		Component[] listB1 = new Component[]{new Enemy(102, infilBase1Run, 102, new Node (n25)), new Location(202, n25.getCoords())};
+		Component[] listB1 = new Component[]{new Enemy(102, infilBase1Run, 102, new Node (nodeList.get(25 - 1))), new Location(202, nodeList.get(25 - 1).getCoords())};
 		InfiltratorBase1 = new Entity(listB1, 102);
 		enemies.add(InfiltratorBase1);
 		InfiltratorBase1.getComponent(0).DecideObjective();
-        Component[] listB2 = new Component[]{new Enemy(103, infilBase1Run, 103, new Node (n29)), new Location(203, n29.getCoords())};
+        Component[] listB2 = new Component[]{new Enemy(103, infilBase1Run, 103, new Node (nodeList.get(29 - 1))), new Location(203, nodeList.get(29 - 1).getCoords())};
         InfiltratorBase2 = new Entity(listB2, 103);
 		enemies.add(InfiltratorBase2);
 		InfiltratorBase2.getComponent(0).DecideObjective();
-        Component[] listB3 = new Component[]{new Enemy(104, infilBase1Run, 104, new Node (n32)), new Location(204, n32.getCoords())};
+        Component[] listB3 = new Component[]{new Enemy(104, infilBase1Run, 104, new Node (nodeList.get(32 - 1))), new Location(204, nodeList.get(32 - 1).getCoords())};
         InfiltratorBase3 = new Entity(listB3, 104);
 		enemies.add(InfiltratorBase3);
 		InfiltratorBase3.getComponent(0).DecideObjective();
-		Component[] listB4 = new Component[]{new Enemy(105, infilBase1Run, 105, new Node (n33)), new Location(205, n33.getCoords())};
+		Component[] listB4 = new Component[]{new Enemy(105, infilBase1Run, 105, new Node (nodeList.get(33 - 1))), new Location(205, nodeList.get(33 - 1).getCoords())};
         InfiltratorBase4 = new Entity(listB4, 105);
 		enemies.add(InfiltratorBase4);
 		InfiltratorBase4.getComponent(0).DecideObjective();
-        Component[] listB5 = new Component[]{new Enemy(106, infilBase1Run, 106, new Node(n30)), new Location(206, n30.getCoords())};
+        Component[] listB5 = new Component[]{new Enemy(106, infilBase1Run, 106, new Node(nodeList.get(30 - 1))), new Location(206, nodeList.get(30 - 1).getCoords())};
         InfiltratorBase5 = new Entity(listB5, 106);
 		enemies.add(InfiltratorBase5);
 		InfiltratorBase5.getComponent(0).DecideObjective();
-        Component[] listI1 = new Component[]{new Enemy(107, infil1Run, 107, new Node(n24)), new Location(207, n24.getCoords())};
+        Component[] listI1 = new Component[]{new Enemy(107, infil1Run, 107, new Node(nodeList.get(24 - 1))), new Location(207, nodeList.get(24 - 1).getCoords())};
         Infiltrator1 = new Entity(listI1, 107);
 		enemies.add(Infiltrator1);
 		Infiltrator1.getComponent(0).DecideObjective();
-        Component[] listI2 = new Component[]{new Enemy(108, infil2Run, 108, new Node(n35)), new Location(208, n35.getCoords())};
+        Component[] listI2 = new Component[]{new Enemy(108, infil2Run, 108, new Node(nodeList.get(35 - 1))), new Location(208, nodeList.get(35 - 1).getCoords())};
         Infiltrator2 = new Entity(listI2, 108);
 		enemies.add(Infiltrator2);
 		Infiltrator2.getComponent(0).DecideObjective();
-        Component[] listI3 = new Component[]{new Enemy(109, infil3Run, 109, new Node(n34)), new Location(209, n34.getCoords())};
+        Component[] listI3 = new Component[]{new Enemy(109, infil3Run, 109, new Node(nodeList.get(34 - 1))), new Location(209, nodeList.get(34 - 1).getCoords())};
         Infiltrator3 = new Entity(listI3, 109);
 		enemies.add(Infiltrator3);
 		Infiltrator3.getComponent(0).DecideObjective();
@@ -370,6 +335,39 @@ public class MyGdxGame extends ApplicationAdapter {
 				Auber.getComponent(1).setLocation(new Point(480, (int) (camera.viewportHeight - 120)));
 				Auber.getComponent(0).setHealth(100);
 				teleDelay = 300;
+			}
+			if (Gdx.input.isKeyPressed(Input.Keys.P)) {
+				//using ideas from https://stackoverflow.com/questions/25669874/opening-an-image-file-from-java-inputstream
+				//i am not allowed to open files that are in the jar as a file so i download the file to a temp file from the jar file so we can use it
+				if (global == false){
+					ClassLoader classLoader = getClass().getClassLoader();
+					InputStream imageStream = classLoader.getResourceAsStream("demo.mp4");
+					try {
+						file = File.createTempFile("demo", ".mp4");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					try (java.io.FileOutputStream out = new java.io.FileOutputStream(file)) {
+						byte[] buffer = new byte[1024];
+						int len;
+						while ((len = imageStream.read(buffer)) != -1) {
+							out.write(buffer, 0, len);
+						}
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
+					global = true;
+				}
+				
+				try {
+					Desktop.getDesktop().open(file);
+					file.deleteOnExit();
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+
 			}
 			if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
 				gameState = 2;
@@ -835,93 +833,50 @@ public class MyGdxGame extends ApplicationAdapter {
     }
 
     public void makeNodes(){
-		n1 = new Node(1, new Point(250, 510), 1, new ArrayList<Integer>(Arrays.asList(2, 3)));
-		n2 = new Node(2, new Point(250, 430), 2, new ArrayList<Integer>(Arrays.asList(1)));
-		n3 = new Node(3, new Point(325, 500), 1, new ArrayList<Integer>(Arrays.asList(1,4)));
-		n4 = new Node(4, new Point(325, 370), 1, new ArrayList<Integer>(Arrays.asList(3, 5, 6, 45)));
-		n5 = new Node(5, new Point(170, 360), 2, new ArrayList<Integer>(Arrays.asList(4)));
-		n6 = new Node(6, new Point(50, 370), 1, new ArrayList<Integer>(Arrays.asList(4, 7)));
-		n7 = new Node(7, new Point(50, 250), 1, new ArrayList<Integer>(Arrays.asList(6, 9, 10)));
-		n8 = new Node(8, new Point(40, 30), 2, new ArrayList<Integer>(Arrays.asList(9)));
-		n9 = new Node(9, new Point(250, 30), 1, new ArrayList<Integer>(Arrays.asList(7, 8, 11)));
-		n10 = new Node(10, new Point(250, 300), 2, new ArrayList<Integer>(Arrays.asList(7)));
-		n11 = new Node(11, new Point(310, 30), 1, new ArrayList<Integer>(Arrays.asList(9, 12, 13)));
-		n12 = new Node(12, new Point(340, 200), 1, new ArrayList<Integer>(Arrays.asList(45, 11)));
-		n13 = new Node(13, new Point(350, 30), 2, new ArrayList<Integer>(Arrays.asList(11)));
-		n14 = new Node(14, new Point(420, 300), 1, new ArrayList<Integer>(Arrays.asList(45, 15, 22, 36)));
-		n15 = new Node(15, new Point(420, 360), 1, new ArrayList<Integer>(Arrays.asList(14, 17, 18)));
-		n16 = new Node(16, new Point(420, 500), 2, new ArrayList<Integer>(Arrays.asList(17)));
-		n17 = new Node(17, new Point(550, 500), 1, new ArrayList<Integer>(Arrays.asList(15, 16, 19)));
-		n18 = new Node(18, new Point(570, 370), 2, new ArrayList<Integer>(Arrays.asList(15)));
-		n19 = new Node(19, new Point(750, 500), 1, new ArrayList<Integer>(Arrays.asList(17, 20, 21)));
-		n20 = new Node(20, new Point(870, 500), 2, new ArrayList<Integer>(Arrays.asList(19)));
-		n21 = new Node(21, new Point(860, 350), 1, new ArrayList<Integer>(Arrays.asList(19, 24)));
-		n22 = new Node(22, new Point(660, 300), 1, new ArrayList<Integer>(Arrays.asList(14, 23, 24)));
-		n23 = new Node(23, new Point(660, 420), 2, new ArrayList<Integer>(Arrays.asList(22)));
-		n24 = new Node(24, new Point(860, 300), 1, new ArrayList<Integer>(Arrays.asList(21, 22, 25)));
-		n25 = new Node(25, new Point(1080, 300), 1, new ArrayList<Integer>(Arrays.asList(24, 26, 29)));
-		n26 = new Node(26, new Point(1080, 380), 1, new ArrayList<Integer>(Arrays.asList(25, 27, 28)));
-		n27 = new Node(27, new Point(940, 350), 2, new ArrayList<Integer>(Arrays.asList(26)));
-		n28 = new Node(28, new Point(1080, 510), 2, new ArrayList<Integer>(Arrays.asList(26)));
-		n29 = new Node(29, new Point(1090, 110), 1, new ArrayList<Integer>(Arrays.asList(25, 30, 32)));
-		n30 = new Node(30, new Point(1090, 70), 1, new ArrayList<Integer>(Arrays.asList(29, 31)));
-		n31 = new Node(31, new Point(950, 30), 2, new ArrayList<Integer>(Arrays.asList(30)));
-		n32 = new Node(32, new Point(900, 120), 1, new ArrayList<Integer>(Arrays.asList(29, 33)));
-		n33 = new Node(33, new Point(870, 110), 1, new ArrayList<Integer>(Arrays.asList(32, 34, 42)));
-		n34 = new Node(34, new Point(870, 30), 1, new ArrayList<Integer>(Arrays.asList(33, 35)));
-		n35 = new Node(35, new Point(430, 30), 1, new ArrayList<Integer>(Arrays.asList(34, 36)));
-		n36 = new Node(36, new Point(430, 170), 1, new ArrayList<Integer>(Arrays.asList(14, 35, 37)));
-		n37 = new Node(37, new Point(500, 170), 1, new ArrayList<Integer>(Arrays.asList(36, 42, 44)));
-		n39 = new Node(39, new Point(820, 220), 1, new ArrayList<Integer>(Arrays.asList(40, 42)));
-		n40 = new Node(40, new Point(870, 220), 1, new ArrayList<Integer>(Arrays.asList(39, 41)));
-		n41 = new Node(41, new Point(1000, 180), 2, new ArrayList<Integer>(Arrays.asList(40)));
-		n42 = new Node(42, new Point(820, 100), 1, new ArrayList<Integer>(Arrays.asList(33, 37, 39, 43)));
-		n43 = new Node(43, new Point(710, 170), 2, new ArrayList<Integer>(Arrays.asList(42)));
-		n44 = new Node(44, new Point(510, 90), 2, new ArrayList<Integer>(Arrays.asList(37)));
-		n45 = new Node(45, new Point(340, 250), 1, new ArrayList<Integer>(Arrays.asList(4, 12, 14)));
-		nodeList.add(n1);
-		nodeList.add(n2);
-		nodeList.add(n3);
-		nodeList.add(n4);
-		nodeList.add(n5);
-		nodeList.add(n6);
-		nodeList.add(n7);
-		nodeList.add(n8);
-		nodeList.add(n9);
-		nodeList.add(n10);
-		nodeList.add(n11);
-		nodeList.add(n12);
-		nodeList.add(n13);
-		nodeList.add(n14);
-		nodeList.add(n15);
-		nodeList.add(n16);
-		nodeList.add(n17);
-		nodeList.add(n18);
-		nodeList.add(n19);
-		nodeList.add(n20);
-		nodeList.add(n21);
-		nodeList.add(n22);
-		nodeList.add(n23);
-		nodeList.add(n24);
-		nodeList.add(n25);
-		nodeList.add(n26);
-		nodeList.add(n27);
-		nodeList.add(n28);
-		nodeList.add(n29);
-		nodeList.add(n30);
-		nodeList.add(n31);
-		nodeList.add(n32);
-		nodeList.add(n33);
-		nodeList.add(n34);
-		nodeList.add(n35);
-		nodeList.add(n36);
-		nodeList.add(n37);
-		nodeList.add(n39);
-		nodeList.add(n40);
-		nodeList.add(n41);
-		nodeList.add(n42);
-		nodeList.add(n43);
-		nodeList.add(n44);
-		nodeList.add(n45);
+		nodeList.add(new Node(1, new Point(250, 510), 1, new ArrayList<Integer>(Arrays.asList(2, 3))));
+		nodeList.add(new Node(2, new Point(250, 430), 2, new ArrayList<Integer>(Arrays.asList(1))));
+		nodeList.add(new Node(3, new Point(325, 500), 1, new ArrayList<Integer>(Arrays.asList(1,4))));
+		nodeList.add(new Node(4, new Point(325, 370), 1, new ArrayList<Integer>(Arrays.asList(3, 5, 6, 45))));
+		nodeList.add(new Node(5, new Point(170, 360), 2, new ArrayList<Integer>(Arrays.asList(4))));
+		nodeList.add(new Node(6, new Point(50, 370), 1, new ArrayList<Integer>(Arrays.asList(4, 7))));
+		nodeList.add(new Node(7, new Point(50, 250), 1, new ArrayList<Integer>(Arrays.asList(6, 9, 10))));
+		nodeList.add(new Node(8, new Point(40, 30), 2, new ArrayList<Integer>(Arrays.asList(9))));
+		nodeList.add(new Node(9, new Point(250, 30), 1, new ArrayList<Integer>(Arrays.asList(7, 8, 11))));
+		nodeList.add(new Node(10, new Point(250, 300), 2, new ArrayList<Integer>(Arrays.asList(7))));
+		nodeList.add(new Node(11, new Point(310, 30), 1, new ArrayList<Integer>(Arrays.asList(9, 12, 13))));
+		nodeList.add(new Node(12, new Point(340, 200), 1, new ArrayList<Integer>(Arrays.asList(45, 11))));
+		nodeList.add(new Node(13, new Point(350, 30), 2, new ArrayList<Integer>(Arrays.asList(11))));
+		nodeList.add(new Node(14, new Point(420, 300), 1, new ArrayList<Integer>(Arrays.asList(45, 15, 22, 36))));
+		nodeList.add(new Node(15, new Point(420, 360), 1, new ArrayList<Integer>(Arrays.asList(14, 17, 18))));
+		nodeList.add(new Node(16, new Point(420, 500), 2, new ArrayList<Integer>(Arrays.asList(17))));
+		nodeList.add(new Node(17, new Point(550, 500), 1, new ArrayList<Integer>(Arrays.asList(15, 16, 19))));
+		nodeList.add(new Node(18, new Point(570, 370), 2, new ArrayList<Integer>(Arrays.asList(15))));
+		nodeList.add(new Node(19, new Point(750, 500), 1, new ArrayList<Integer>(Arrays.asList(17, 20, 21))));
+		nodeList.add(new Node(20, new Point(870, 500), 2, new ArrayList<Integer>(Arrays.asList(19))));
+		nodeList.add(new Node(21, new Point(860, 350), 1, new ArrayList<Integer>(Arrays.asList(19, 24))));
+		nodeList.add(new Node(22, new Point(660, 300), 1, new ArrayList<Integer>(Arrays.asList(14, 23, 24))));
+		nodeList.add(new Node(23, new Point(660, 420), 2, new ArrayList<Integer>(Arrays.asList(22))));
+		nodeList.add(new Node(24, new Point(860, 300), 1, new ArrayList<Integer>(Arrays.asList(21, 22, 25))));
+		nodeList.add(new Node(25, new Point(1080, 300), 1, new ArrayList<Integer>(Arrays.asList(24, 26, 29))));
+		nodeList.add(new Node(26, new Point(1080, 380), 1, new ArrayList<Integer>(Arrays.asList(25, 27, 28))));
+		nodeList.add(new Node(27, new Point(940, 350), 2, new ArrayList<Integer>(Arrays.asList(26))));
+		nodeList.add(new Node(28, new Point(1080, 510), 2, new ArrayList<Integer>(Arrays.asList(26))));
+		nodeList.add(new Node(29, new Point(1090, 110), 1, new ArrayList<Integer>(Arrays.asList(25, 30, 32))));
+		nodeList.add(new Node(30, new Point(1090, 70), 1, new ArrayList<Integer>(Arrays.asList(29, 31))));
+		nodeList.add(new Node(31, new Point(950, 30), 2, new ArrayList<Integer>(Arrays.asList(30))));
+		nodeList.add(new Node(32, new Point(900, 120), 1, new ArrayList<Integer>(Arrays.asList(29, 33))));
+		nodeList.add(new Node(33, new Point(870, 110), 1, new ArrayList<Integer>(Arrays.asList(32, 34, 42))));
+		nodeList.add(new Node(34, new Point(870, 30), 1, new ArrayList<Integer>(Arrays.asList(33, 35))));
+		nodeList.add(new Node(35, new Point(430, 30), 1, new ArrayList<Integer>(Arrays.asList(34, 36))));
+		nodeList.add(new Node(36, new Point(430, 170), 1, new ArrayList<Integer>(Arrays.asList(14, 35, 37))));
+		nodeList.add(new Node(37, new Point(500, 170), 1, new ArrayList<Integer>(Arrays.asList(36, 42, 44))));
+		nodeList.add(new Node(39, new Point(820, 220), 1, new ArrayList<Integer>(Arrays.asList(40, 42))));
+		nodeList.add(new Node(40, new Point(870, 220), 1, new ArrayList<Integer>(Arrays.asList(39, 41))));
+		nodeList.add(new Node(41, new Point(1000, 180), 2, new ArrayList<Integer>(Arrays.asList(40))));
+		nodeList.add(new Node(42, new Point(820, 100), 1, new ArrayList<Integer>(Arrays.asList(33, 37, 39, 43))));
+		nodeList.add(new Node(43, new Point(710, 170), 2, new ArrayList<Integer>(Arrays.asList(42))));
+		nodeList.add(new Node(44, new Point(510, 90), 2, new ArrayList<Integer>(Arrays.asList(37))));
+		nodeList.add(new Node(45, new Point(340, 250), 1, new ArrayList<Integer>(Arrays.asList(4, 12, 14))));
+
 	}
 }
