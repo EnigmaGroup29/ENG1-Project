@@ -264,13 +264,11 @@ h4{
   color: white;
 }
 div.sticky {
-  position: -webkit-sticky;
   color:white;
   font-size:18px;
-  position: sticky;
+  position: absolute;
   top: 0;
   padding: 5px;
-  background-image: linear-gradient(to right, #0c3e91, #0056a9, #006ec0, #0087d6, #12a0eb);
 }
 a.back{
   text-decoration: None;
